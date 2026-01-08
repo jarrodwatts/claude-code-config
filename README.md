@@ -35,6 +35,7 @@ Path-scoped instructions loaded automatically when working with matching files.
 | File | Scope | Description |
 |------|-------|-------------|
 | `typescript.md` | `**/*.{ts,tsx}` | TypeScript conventions |
+| `python.md` | `**/*.py` | Python conventions |
 | `testing.md` | `**/*.{test,spec}.ts` | Testing patterns |
 | `comments.md` | All files | Comment policy |
 | `forge.md` | `**/*.sol` | Foundry/ZKsync rules |
