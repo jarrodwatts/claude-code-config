@@ -79,3 +79,26 @@ Scripts triggered by Claude Code events.
 ### CLAUDE.md
 
 Personal global instructions loaded into every session.
+
+## Recommended Plugins
+
+Plugins I use alongside this config. Install via CLI:
+
+### Official Plugins
+
+```bash
+claude plugin install frontend-design
+claude plugin install code-review
+claude plugin install typescript-lsp
+claude plugin install plugin-dev
+claude plugin install ralph-loop
+```
+
+### claude-hud (status line)
+
+Add the marketplace first, then install:
+
+```bash
+claude plugin marketplace add jarrodwatts/claude-hud
+claude plugin install claude-hud@claude-hud
+```
