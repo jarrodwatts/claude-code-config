@@ -25,3 +25,4 @@ settings.local.json
 # Include this gitignore and readme
 !.gitignore
 !README.md
+!INSTALL.md

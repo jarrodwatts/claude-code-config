@@ -4,13 +4,17 @@ Personal Claude Code configuration files.
 
 ## Installation
 
-Clone to your home directory:
+### Option 1: Copy-Paste into Claude Code (No Git Required)
+
+Copy the prompt from [INSTALL.md](INSTALL.md) and paste it into Claude Code. Claude will fetch and install all config files automatically.
+
+### Option 2: Git Clone
 
 ```bash
 git clone https://github.com/jarrodwatts/claude-code-config.git ~/.claude
 ```
 
-Or copy specific components:
+### Option 3: Selective Install
 
 ```bash
 # Clone elsewhere first
