@@ -21,6 +21,9 @@ Fetch and install these files to ~/.claude/:
 - https://raw.githubusercontent.com/jarrodwatts/claude-code-config/master/skills/planning-with-files/SKILL.md → ~/.claude/skills/planning-with-files/SKILL.md
 - https://raw.githubusercontent.com/jarrodwatts/claude-code-config/master/skills/planning-with-files/examples.md → ~/.claude/skills/planning-with-files/examples.md
 - https://raw.githubusercontent.com/jarrodwatts/claude-code-config/master/skills/planning-with-files/reference.md → ~/.claude/skills/planning-with-files/reference.md
+- https://raw.githubusercontent.com/jarrodwatts/claude-code-config/master/skills/react-useeffect/SKILL.md → ~/.claude/skills/react-useeffect/SKILL.md
+- https://raw.githubusercontent.com/jarrodwatts/claude-code-config/master/skills/react-useeffect/alternatives.md → ~/.claude/skills/react-useeffect/alternatives.md
+- https://raw.githubusercontent.com/jarrodwatts/claude-code-config/master/skills/react-useeffect/anti-patterns.md → ~/.claude/skills/react-useeffect/anti-patterns.md
 
 **Agents** (custom subagents):
 - https://raw.githubusercontent.com/jarrodwatts/claude-code-config/master/agents/codebase-search.md → ~/.claude/agents/codebase-search.md
@@ -61,7 +64,7 @@ Create directories as needed, fetch files with curl, and make hook scripts execu
 | Component | Files | Description |
 |-----------|-------|-------------|
 | Rules | 4 | TypeScript, testing, comments, Foundry conventions |
-| Skills | 1 | Planning-with-files (Manus-style workflow) |
+| Skills | 2 | Planning-with-files (Manus-style workflow), React useEffect best practices |
 | Agents | 4 | Codebase search, media interpreter, OSS librarian, docs writer |
 | Commands | 1 | Interview (spec fleshing) |
 | Hooks | 3 | Keyword detector, comment checker, todo enforcer |
