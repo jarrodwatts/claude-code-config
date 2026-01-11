@@ -56,6 +56,7 @@ Fetch and install these files to ~/.claude/:
 - https://raw.githubusercontent.com/Esk3nder/claude-code-config/main/agents/codebase-search.md → ~/.claude/agents/codebase-search.md
 - https://raw.githubusercontent.com/Esk3nder/claude-code-config/main/agents/media-interpreter.md → ~/.claude/agents/media-interpreter.md
 - https://raw.githubusercontent.com/Esk3nder/claude-code-config/main/agents/open-source-librarian.md → ~/.claude/agents/open-source-librarian.md
+- https://raw.githubusercontent.com/Esk3nder/claude-code-config/main/agents/oracle.md → ~/.claude/agents/oracle.md
 - https://raw.githubusercontent.com/Esk3nder/claude-code-config/main/agents/tech-docs-writer.md → ~/.claude/agents/tech-docs-writer.md
 - https://raw.githubusercontent.com/Esk3nder/claude-code-config/main/agents/review/index.md → ~/.claude/agents/review/index.md
 - https://raw.githubusercontent.com/Esk3nder/claude-code-config/main/agents/review/security-sentinel.md → ~/.claude/agents/review/security-sentinel.md
@@ -148,7 +149,7 @@ Create directories as needed, fetch files with curl, and make hook scripts execu
 |-----------|-------|-------------|
 | Rules | 8 | TypeScript/testing/comments/Foundry + delegator orchestration |
 | Skills | 16 | Planning-with-files, React useEffect, plus the Workflows pack (brainstorm → plan → work → TDD/verification → review → finish, worktrees, writing-skills) |
-| Agents | 4 | Codebase search, media interpreter, OSS librarian, docs writer |
+| Agents | 5 + 14 review | Codebase search, media interpreter, OSS librarian, oracle, docs writer + 14 code review specialists |
 | Prompts | 5 | Codex expert prompts (delegator) |
 | Commands | 9 | Interview, Workflows brainstorm/plan/work/review/compound, delegator setup/task/uninstall |
 | Hooks | 4 | Keyword detector, comment checker, todo enforcer, require-green-tests Stop gate |

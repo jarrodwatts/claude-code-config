@@ -284,7 +284,7 @@ Agents are specialized subagents for specific domains. Located in `.claude/agent
 
 ```
 ┌────────────────────────────────────────────────────────────────────┐
-│                         AGENTS                                     │
+│                         AGENTS (19)                                │
 ├────────────────────────────────────────────────────────────────────┤
 │                                                                    │
 │  EXPLORATION                   DOCUMENTATION                       │
@@ -292,6 +292,9 @@ Agents are specialized subagents for specific domains. Located in `.claude/agent
 │                                                                    │
 │  RESEARCH                      INTERPRETATION                      │
 │  └── open-source-librarian     └── media-interpreter              │
+│                                                                    │
+│  ADVISORY (high-stakes decisions)                                  │
+│  └── oracle                                                        │
 │                                                                    │
 │  CODE REVIEW (14 specialized reviewers)                            │
 │  ├── agent-native              ├── architecture-strategist        │
@@ -309,6 +312,7 @@ Agents are specialized subagents for specific domains. Located in `.claude/agent
 |-------|---------|----------|
 | `codebase-search` | Find files and implementations | "Where is X defined?" |
 | `open-source-librarian` | Research OSS with citations | "How does library Y work?" |
+| `oracle` | High-stakes architecture and debugging | Complex decisions after failures |
 | `media-interpreter` | Extract info from PDFs/images | Processing non-code files |
 | `review/*` | Specialized code reviewers | Multi-perspective review |
 
@@ -531,6 +535,7 @@ claude-code-config/
 │   ├── codebase-search.md
 │   ├── media-interpreter.md
 │   ├── open-source-librarian.md
+│   ├── oracle.md
 │   ├── tech-docs-writer.md
 │   └── review/               # Code review specialists (14)
 │       ├── index.md          # Review agent orchestrator
