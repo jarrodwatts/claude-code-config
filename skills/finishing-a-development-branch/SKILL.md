@@ -1,5 +1,5 @@
 ---
-name: superpowers-finishing-a-development-branch
+name: workflows-finishing-a-development-branch
 description: Finalize a branch safely: clean working tree, green checks, summary, and merge readiness.
 ---
 

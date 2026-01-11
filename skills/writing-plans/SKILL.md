@@ -1,6 +1,6 @@
 ---
-name: superpowers-writing-plans
-description: Produce a short, verifiable task plan with files and checks, written to task_plan.md; pairs with planning-with-files for persistence.
+name: workflows-writing-plans
+description: Produce a short, verifiable task plan with files and checks, written to plans/{slug}.md; pairs with planning-with-files for persistence.
 ---
 
 # Writing Plans
@@ -8,7 +8,7 @@ description: Produce a short, verifiable task plan with files and checks, writte
 Use when tasks span multiple steps or files.
 
 Steps:
-1. Create or update `task_plan.md` in the working directory (single source of truth).
+1. Create or update `plans/{slug}.md` in the working directory (single source of truth). Ensure `plans/` exists; derive `{slug}` from the goal (lowercase, hyphen-separated, 3–6 words) and prefix with `YYYYMMDD-`.
 2. Capture: goal (1 line), constraints, and success criteria.
 3. List 4–8 tasks max, each with: action, target files, and a verification/check.
 4. Mark status boxes `[ ]` initially; keep tasks small and ordered.

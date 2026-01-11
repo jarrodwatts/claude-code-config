@@ -1,5 +1,5 @@
 ---
-name: superpowers-requesting-code-review
+name: workflows-requesting-code-review
 description: Prepare a concise, reviewer-friendly summary and checklist before requesting a review.
 ---
 

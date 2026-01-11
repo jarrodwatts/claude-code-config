@@ -1,5 +1,5 @@
 ---
-name: superpowers-receiving-code-review
+name: workflows-receiving-code-review
 description: Process reviewer feedback systematically and update code and notes before re-requesting.
 ---
 

@@ -20,11 +20,11 @@ This skill is based on the context engineering principles from Manus, the AI age
 
 **Problem:** After ~50 tool calls, models forget original goals ("lost in the middle" effect).
 
-**Solution:** Keep a `task_plan.md` file that gets RE-READ throughout execution:
+**Solution:** Keep a `plans/{slug}.md` file that gets RE-READ throughout execution:
 ```
 Start of context: [Original goal - far away, forgotten]
 ...many tool calls...
-End of context: [Recently read task_plan.md - gets ATTENTION!]
+End of context: [Recently read plans/{slug}.md - gets ATTENTION!]
 ```
 
 By reading the plan file before each decision, goals appear in the attention window.

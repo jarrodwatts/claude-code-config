@@ -1,5 +1,5 @@
 ---
-name: superpowers-verification-before-completion
+name: workflows-verification-before-completion
 description: Run required checks (tests, lint, typecheck, manual QA) and block delivery until they pass.
 ---
 

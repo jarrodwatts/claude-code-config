@@ -1,5 +1,5 @@
 ---
-name: superpowers-dispatching-parallel-agents
+name: workflows-dispatching-parallel-agents
 description: Spin up parallel agents only when the user asks for parallelization or tasks are independent.
 ---
 
@@ -12,4 +12,4 @@ Steps:
 2. Define each mini-brief: goal, files, deliverable, verification, timebox.
 3. Launch only the needed agents; avoid shotgun spawning.
 4. Merge results carefully: prefer non-overlapping files; otherwise, reconcile sequentially.
-5. Update `task_plan.md` with what was parallelized and remaining gaps.
+5. Update `plans/{slug}.md` with what was parallelized and remaining gaps.

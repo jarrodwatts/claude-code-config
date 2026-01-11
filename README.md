@@ -64,9 +64,9 @@ Model-invoked capabilities Claude applies automatically.
 |-------|-------------|
 | `planning-with-files` | Manus-style persistent markdown planning |
 | `react-useeffect` | React useEffect guardrails |
-| `using-superpowers` | Enforce checking relevant skills before acting |
+| `using-workflows` | Enforce checking relevant skills before acting |
 | `brainstorming` | Generate options/risks before committing |
-| `writing-plans` | Write short verifiable plans to task_plan.md |
+| `writing-plans` | Write short verifiable plans to plans/{slug}.md |
 | `executing-plans` | Default plan executor with status updates |
 | `subagent-driven-development` | Delegate large parallelizable plans |
 | `dispatching-parallel-agents` | Launch parallel agents when explicitly requested |
@@ -89,6 +89,7 @@ Custom subagents for specialized tasks.
 | `media-interpreter` | Extract info from PDFs/images |
 | `open-source-librarian` | Research OSS with citations |
 | `tech-docs-writer` | Create technical documentation |
+| `review/*` | Specialized review agents (see `agents/review/index.md`) |
 
 ### Commands (`.claude/commands/`)
 
@@ -97,9 +98,11 @@ Custom slash commands.
 | Command | Description |
 |---------|-------------|
 | `interview` | Interactive planning/spec fleshing |
-| `superpowers/brainstorm` | Run the Superpowers brainstorming loop |
-| `superpowers/write-plan` | Create/update `task_plan.md` with short verifiable tasks |
-| `superpowers/execute-plan` | Walk plan tasks, update status, run checks |
+| `workflows/brainstorm` | Run the Workflows brainstorming loop |
+| `workflows/plan` | Create/update `plans/{slug}.md` with short verifiable tasks |
+| `workflows/work` | Walk plan tasks, update status, run checks |
+| `workflows/review` | Multi-agent code review with TodoWrite findings |
+| `workflows/compound` | Capture solved problems in `docs/solutions/` |
 
 ### Hooks (`.claude/hooks/`)
 
@@ -110,7 +113,7 @@ Scripts triggered by Claude Code events.
 | `keyword-detector.py` | UserPromptSubmit | Detects keywords in prompts |
 | `check-comments.py` | PostToolUse (Write/Edit) | Validates comment policy |
 | `todo-enforcer.sh` | Stop | Ensures todos are tracked |
-| `superpowers/require-green-tests.sh` | Stop | Blocks finish unless tests are green (with caching) |
+| `workflows/require-green-tests.sh` | Stop | Blocks finish unless tests are green (with caching) |
 
 ### CLAUDE.md
 

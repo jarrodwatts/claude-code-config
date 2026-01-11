@@ -1,13 +1,13 @@
 ---
-name: superpowers-using-superpowers
-description: Always check and invoke relevant Superpowers skills before acting; ensures deterministic routing and avoids ad‑hoc workflows.
+name: workflows-using-workflows
+description: Always check and invoke relevant Workflows skills before acting; ensures deterministic routing and avoids ad‑hoc workflows.
 ---
 
-# Using Superpowers
+# Using Workflows
 
 Before any non-trivial reply:
 1. Pause and scan: does this map to brainstorming, planning, executing, debugging, testing, review, or finishing?
-2. Route to the highest-priority matching skill (brainstorm → plan → persist → execute → debug → test → verify → review → finish).
+2. Route to the highest-priority matching skill (brainstorm → plan → persist → work → debug → test → verify → review → finish).
 3. On **errors/failures**, auto-route:
    - Test failure → `test-driven-development`
    - Lint/type failure → `verification-before-completion`

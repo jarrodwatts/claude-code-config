@@ -1,5 +1,5 @@
 ---
-name: superpowers-writing-skills
+name: workflows-writing-skills
 description: Author or update skills with clear triggers, steps, and outcomes so the model can invoke them deterministically.
 ---
 

@@ -1,5 +1,5 @@
 ---
-name: superpowers-test-driven-development
+name: workflows-test-driven-development
 description: Follow RED→GREEN→REFACTOR; write the failing test first, then minimal code to pass, then cleanup.
 ---
 
@@ -13,4 +13,4 @@ Cycle:
 3. Implement the minimal change to pass.
 4. Re-run tests; ensure all green.
 5. Refactor for clarity; keep tests green.
-6. Document commands used and outcomes in `task_plan.md` or commit notes.
+6. Document commands used and outcomes in `plans/{slug}.md` or commit notes.

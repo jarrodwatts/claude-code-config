@@ -8,6 +8,10 @@ mkdir -p "$STATE_DIR"
 
 # Pick a deterministic test command. Allow override via env.
 pick_test_cmd() {
+  if [[ -n "${WORKFLOWS_TEST_CMD-}" ]]; then
+    echo "$WORKFLOWS_TEST_CMD"
+    return
+  fi
   if [[ -n "${SUPERPOWERS_TEST_CMD-}" ]]; then
     echo "$SUPERPOWERS_TEST_CMD"
     return

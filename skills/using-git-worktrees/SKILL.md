@@ -1,5 +1,5 @@
 ---
-name: superpowers-using-git-worktrees
+name: workflows-using-git-worktrees
 description: Safely create, switch, and clean up git worktrees for parallel work.
 ---
 

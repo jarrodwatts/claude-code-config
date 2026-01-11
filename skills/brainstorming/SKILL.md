@@ -1,5 +1,5 @@
 ---
-name: superpowers-brainstorming
+name: workflows-brainstorming
 description: Generate options, constraints, risks, and selection rationale before committing to a solution.
 ---
 

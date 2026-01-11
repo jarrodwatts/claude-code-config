@@ -1,5 +1,5 @@
 ---
-name: superpowers-subagent-driven-development
+name: workflows-subagent-driven-development
 description: Break large plans into parallelizable chunks and delegate to subagents; use only when work can safely run concurrently.
 ---
 
@@ -12,6 +12,6 @@ Process:
 2. Define clear deliverables and verification per workstream; avoid shared mutable files.
 3. Dispatch subagents with minimal scope and timebox; capture task IDs.
 4. Collect results, reconcile conflicts, and re-run verifications.
-5. Update `task_plan.md` with what ran in parallel and outcomes.
+5. Update `plans/{slug}.md` with what ran in parallel and outcomes.
 
 If tasks share the same files or ordering matters, fall back to `executing-plans`.

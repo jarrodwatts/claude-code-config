@@ -11,7 +11,7 @@ Work like Manus: Use persistent markdown files as your "working memory on disk."
 
 Before ANY complex task:
 
-1. **Create `task_plan.md`** in the working directory
+1. **Create `plans/{slug}.md`** in the working directory (ensure `plans/` exists)
 2. **Define phases** with checkboxes
 3. **Update after each phase** - mark [x] and change status
 4. **Read before deciding** - refresh goals in attention window
@@ -22,16 +22,16 @@ For every non-trivial task, create THREE files:
 
 | File | Purpose | When to Update |
 |------|---------|----------------|
-| `task_plan.md` | Track phases and progress | After each phase |
+| `plans/{slug}.md` | Track phases and progress | After each phase |
 | `notes.md` | Store findings and research | During research |
 | `[deliverable].md` | Final output | At completion |
 
 ## Core Workflow
 
 ```
-Loop 1: Create task_plan.md with goal and phases
-Loop 2: Research → save to notes.md → update task_plan.md
-Loop 3: Read notes.md → create deliverable → update task_plan.md
+Loop 1: Create plans/{slug}.md with goal and phases
+Loop 2: Research → save to notes.md → update plans/{slug}.md
+Loop 3: Read notes.md → create deliverable → update plans/{slug}.md
 Loop 4: Deliver final output
 ```
 
@@ -39,12 +39,12 @@ Loop 4: Deliver final output
 
 **Before each major action:**
 ```bash
-Read task_plan.md  # Refresh goals in attention window
+Read plans/{slug}.md  # Refresh goals in attention window
 ```
 
 **After each phase:**
 ```bash
-Edit task_plan.md  # Mark [x], update status
+Edit plans/{slug}.md  # Mark [x], update status
 ```
 
 **When storing information:**
@@ -52,9 +52,9 @@ Edit task_plan.md  # Mark [x], update status
 Write notes.md     # Don't stuff context, store in file
 ```
 
-## task_plan.md Template
+## Plan File Template (`plans/{slug}.md`)
 
-Create this file FIRST for any complex task:
+Create this file FIRST for any complex task. Use a slug derived from the task goal: lowercase, hyphen-separated, 3–6 words max, prefixed with `YYYYMMDD-`.
 
 ```markdown
 # Task Plan: [Brief Description]
@@ -107,7 +107,7 @@ For research and findings:
 ## Critical Rules
 
 ### 1. ALWAYS Create Plan First
-Never start a complex task without `task_plan.md`. This is non-negotiable.
+Never start a complex task without `plans/{slug}.md`. This is non-negotiable.
 
 ### 2. Read Before Decide
 Before any major decision, read the plan file. This keeps goals in your attention window.
@@ -142,7 +142,7 @@ Every error goes in the "Errors Encountered" section. This builds knowledge for 
 
 | Don't | Do Instead |
 |-------|------------|
-| Use TodoWrite for persistence | Create `task_plan.md` file |
+| Use TodoWrite for persistence | Create `plans/{slug}.md` file |
 | State goals once and forget | Re-read plan before each decision |
 | Hide errors and retry | Log errors to plan file |
 | Stuff everything in context | Store large content in files |
