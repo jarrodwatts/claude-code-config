@@ -1,9 +1,15 @@
 {
   "meta": {
-    "version": "1.0",
-    "generated": "2026-01-11",
-    "pass": 1,
-    "repo": "claude-code-config/san-juan"
+    "version": "1.1",
+    "generated": "2026-01-12",
+    "pass": 2,
+    "repo": "claude-code-config/san-juan",
+    "corrections": [
+      "Fixed keyword-detector edges: now type=context-injection (suggestions, not dispatches)",
+      "Fixed review agent edges: now conditional based on file types per routing table",
+      "Added all 14 review agent conditional edges",
+      "Added 5 context mode nodes for keyword-detector targets"
+    ]
   },
   "nodes": [
     {
@@ -29,6 +35,41 @@
       "type": "entry",
       "label": "Session Stop",
       "evidence": "User exit or task complete"
+    },
+    {
+      "id": "context:ultrawork-mode",
+      "type": "context",
+      "label": "Ultrawork Mode",
+      "note": "Suggests parallel execution, comprehensive planning, thorough verification",
+      "evidence": "hooks/keyword-detector.py:22-38"
+    },
+    {
+      "id": "context:delegation-mode",
+      "type": "context",
+      "label": "Delegation Mode",
+      "note": "Suggests native workflows + Codex handoff for adversarial review",
+      "evidence": "hooks/keyword-detector.py:41-62"
+    },
+    {
+      "id": "context:search-mode",
+      "type": "context",
+      "label": "Search Mode",
+      "note": "Suggests parallel searches, multiple angles, exhaustive matching",
+      "evidence": "hooks/keyword-detector.py:65-85"
+    },
+    {
+      "id": "context:analysis-mode",
+      "type": "context",
+      "label": "Analysis Mode",
+      "note": "Suggests deep investigation, oracle consultation, evidence gathering",
+      "evidence": "hooks/keyword-detector.py:88-108"
+    },
+    {
+      "id": "context:think-mode",
+      "type": "context",
+      "label": "Think Mode",
+      "note": "Suggests extended reasoning, multiple perspectives, trade-off analysis",
+      "evidence": "hooks/keyword-detector.py:111-127"
     },
     {
       "id": "hook:keyword-detector",
@@ -218,7 +259,19 @@
       "id": "skill:react-useeffect",
       "type": "skill",
       "label": "react-useeffect",
-      "evidence": "skills/react-useeffect/SKILL.md"
+      "evidence": "skills/ReactUseEffect/SKILL.md"
+    },
+    {
+      "id": "skill:compound",
+      "type": "skill",
+      "label": "compound",
+      "evidence": "skills/Compound/SKILL.md"
+    },
+    {
+      "id": "skill:review",
+      "type": "skill",
+      "label": "review",
+      "evidence": "skills/Review/SKILL.md"
     },
     {
       "id": "agent:codebase-search",
@@ -522,51 +575,127 @@
     },
     {
       "from": "hook:keyword-detector",
-      "to": "skill:subagent-driven-development",
-      "condition": "ultrawork|delegate|delegator",
-      "evidence": "hooks/keyword-detector.py:22-60"
+      "to": "context:ultrawork-mode",
+      "type": "context-injection",
+      "condition": "ultrawork|ulw|ultra\\s*work",
+      "note": "Injects additionalContext suggesting parallel execution - does NOT dispatch",
+      "evidence": "hooks/keyword-detector.py:22-38"
     },
     {
       "from": "hook:keyword-detector",
-      "to": "agent:codebase-search",
-      "condition": "search|find|locate",
-      "evidence": "hooks/keyword-detector.py:61-80"
+      "to": "context:delegation-mode",
+      "type": "context-injection",
+      "condition": "multi[-\\s]*agent|delegate|delegation|parallelize|parallel|sub[-\\s]*agent|gpt|codex|delegator",
+      "note": "Injects additionalContext suggesting delegation patterns - does NOT dispatch",
+      "evidence": "hooks/keyword-detector.py:41-62"
     },
     {
       "from": "hook:keyword-detector",
-      "to": "agent:oracle",
-      "condition": "analyze|investigate|debug",
-      "evidence": "hooks/keyword-detector.py:81-100"
+      "to": "context:search-mode",
+      "type": "context-injection",
+      "condition": "search|find|locate|where\\s+is",
+      "note": "Injects additionalContext suggesting parallel searches - does NOT dispatch",
+      "evidence": "hooks/keyword-detector.py:65-85"
+    },
+    {
+      "from": "hook:keyword-detector",
+      "to": "context:analysis-mode",
+      "type": "context-injection",
+      "condition": "analyze|investigate|debug|diagnose",
+      "note": "Injects additionalContext suggesting deep investigation - does NOT dispatch",
+      "evidence": "hooks/keyword-detector.py:88-108"
+    },
+    {
+      "from": "hook:keyword-detector",
+      "to": "context:think-mode",
+      "type": "context-injection",
+      "condition": "think\\s*(deeply|hard|carefully)",
+      "note": "Injects additionalContext for extended reasoning - does NOT dispatch",
+      "evidence": "hooks/keyword-detector.py:111-127"
     },
     {
       "from": "cmd:workflows-review",
       "to": "agent:review-security-sentinel",
-      "condition": "parallel dispatch",
-      "evidence": "commands/workflows/review.md"
-    },
-    {
-      "from": "cmd:workflows-review",
-      "to": "agent:review-performance-oracle",
-      "condition": "parallel dispatch",
-      "evidence": "commands/workflows/review.md"
+      "condition": ">3 files OR risky areas",
+      "evidence": "commands/workflows/review.md:20"
     },
     {
       "from": "cmd:workflows-review",
       "to": "agent:review-architecture-strategist",
-      "condition": "parallel dispatch",
-      "evidence": "commands/workflows/review.md"
+      "condition": ">3 files OR risky areas",
+      "evidence": "commands/workflows/review.md:20"
+    },
+    {
+      "from": "cmd:workflows-review",
+      "to": "agent:review-typescript",
+      "condition": ".ts OR .tsx files changed",
+      "evidence": "commands/workflows/review.md:21"
+    },
+    {
+      "from": "cmd:workflows-review",
+      "to": "agent:review-python",
+      "condition": ".py files changed",
+      "evidence": "commands/workflows/review.md:22"
+    },
+    {
+      "from": "cmd:workflows-review",
+      "to": "agent:review-rails",
+      "condition": ".rb files OR Gemfile changed",
+      "evidence": "commands/workflows/review.md:23"
+    },
+    {
+      "from": "cmd:workflows-review",
+      "to": "agent:review-dhh-rails",
+      "condition": ".rb files AND conventional Rails",
+      "evidence": "commands/workflows/review.md:23"
+    },
+    {
+      "from": "cmd:workflows-review",
+      "to": "agent:review-data-migration-expert",
+      "condition": "database migrations changed",
+      "evidence": "commands/workflows/review.md:25"
+    },
+    {
+      "from": "cmd:workflows-review",
+      "to": "agent:review-data-integrity-guardian",
+      "condition": "database migrations changed",
+      "evidence": "commands/workflows/review.md:25"
+    },
+    {
+      "from": "cmd:workflows-review",
+      "to": "agent:review-deployment-verification",
+      "condition": "config/deploy files changed",
+      "evidence": "commands/workflows/review.md:26"
+    },
+    {
+      "from": "cmd:workflows-review",
+      "to": "agent:review-frontend-races",
+      "condition": "frontend async/state code changed",
+      "evidence": "commands/workflows/review.md:27"
+    },
+    {
+      "from": "cmd:workflows-review",
+      "to": "agent:review-performance-oracle",
+      "condition": "performance-sensitive paths changed",
+      "evidence": "commands/workflows/review.md:28"
+    },
+    {
+      "from": "cmd:workflows-review",
+      "to": "agent:review-agent-native",
+      "condition": "agent/prompt files changed",
+      "evidence": "commands/workflows/review.md:29"
     },
     {
       "from": "cmd:workflows-review",
       "to": "agent:review-code-simplicity",
-      "condition": "parallel dispatch",
-      "evidence": "commands/workflows/review.md"
+      "condition": "complex logic present",
+      "evidence": "commands/workflows/review.md:30"
     },
     {
       "from": "cmd:workflows-review",
       "to": "agent:review-pattern-recognition",
-      "condition": "parallel dispatch",
-      "evidence": "commands/workflows/review.md"
+      "condition": "pattern violations suspected",
+      "evidence": "commands/workflows/review.md:31"
     },
     {
       "from": "cmd:workflows-review",
@@ -620,7 +749,19 @@
       "from": "cmd:workflows-work",
       "to": "skill:executing-plans",
       "condition": "command invocation",
-      "evidence": "skills/executing-plans/SKILL.md"
+      "evidence": "skills/ExecutingPlans/SKILL.md"
+    },
+    {
+      "from": "cmd:workflows-compound",
+      "to": "skill:compound",
+      "condition": "command invocation",
+      "evidence": "skills/Compound/SKILL.md"
+    },
+    {
+      "from": "cmd:workflows-review",
+      "to": "skill:review",
+      "condition": "command invocation",
+      "evidence": "skills/Review/SKILL.md"
     }
   ]
 }

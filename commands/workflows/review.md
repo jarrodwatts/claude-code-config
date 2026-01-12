@@ -1,15 +1,37 @@
 ---
-allowed-tools: Read, Glob, Grep, Bash, TodoWrite
+allowed-tools: Read, Glob, Grep, Bash, TodoWrite, Task
 argument-hint: [review-target]
 description: Workflows review: run a focused review and log findings as TodoWrite items.
 ---
 
-You are invoking **workflows-review** for `$ARGUMENTS` (default: current branch diff).
+You are invoking **Review** for `$ARGUMENTS` (default: current branch diff).
 
 1) Determine the review target:
    - If a PR URL/number or branch is provided, use that.
    - Otherwise review the current branch diff against main.
 2) Collect context: key files changed, tests touched, risky areas.
+
+## Agent Routing Table
+
+Select agents based on what files changed:
+
+| Condition | Agents to Dispatch |
+|-----------|-------------------|
+| **Always** (>3 files or risky areas) | `security-sentinel`, `architecture-strategist` |
+| `.ts`, `.tsx` files | `typescript` |
+| `.py` files | `python` |
+| `.rb` files OR `Gemfile` | `rails` (+ `dhh-rails` if conventional) |
+| `.sol` files | Skip review agents (use forge test) |
+| Database migrations | `data-migration-expert`, `data-integrity-guardian` |
+| Config/deploy files | `deployment-verification` |
+| Frontend async/state | `frontend-races` |
+| Performance-sensitive paths | `performance-oracle` |
+| Agent/prompt files | `agent-native` |
+| Complex logic | `code-simplicity` |
+| Pattern violations suspected | `pattern-recognition` |
+
+**Skip agents** that don't apply (e.g., don't run `typescript` on Python-only changes).
+
 3) Always run a Codex adversarial review via `/claude-delegator/task` (read-only). If the command isn't available, note it and continue with native review.
 
 Codex task template (fill in, keep concise):
@@ -37,7 +59,7 @@ MODE: Advisory
 ```
 4) If the change touches security/perf hotspots (auth/permissions, crypto/secrets, payments, migrations, concurrency, caching, query hot paths, data integrity), run an additional Codex spotlight pass focused on that domain.
 5) Run native review passes (correctness, security, performance, maintainability).
-6) Dispatch relevant review agents under `agents/review/` in parallel and merge their findings with Codex output (dedupe).
+6) Use the **Agent Routing Table** above to select which `agents/review/` agents to dispatch. Launch selected agents in parallel using the Task tool. Merge findings with Codex output (dedupe).
 7) For each finding, create a TodoWrite item:
    - content: "[P1|P2|P3] <short finding> — <file/area>"
    - status: pending

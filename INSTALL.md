@@ -31,26 +31,24 @@ Fetch and install these files to ~/.claude/:
 - https://raw.githubusercontent.com/Esk3nder/claude-code-config/main/rules/delegator/delegation-format.md → ~/.claude/rules/delegator/delegation-format.md
 
 **Skills** (model-invoked capabilities):
-- https://raw.githubusercontent.com/Esk3nder/claude-code-config/main/skills/planning-with-files/SKILL.md → ~/.claude/skills/planning-with-files/SKILL.md
-- https://raw.githubusercontent.com/Esk3nder/claude-code-config/main/skills/planning-with-files/examples.md → ~/.claude/skills/planning-with-files/examples.md
-- https://raw.githubusercontent.com/Esk3nder/claude-code-config/main/skills/planning-with-files/reference.md → ~/.claude/skills/planning-with-files/reference.md
-- https://raw.githubusercontent.com/Esk3nder/claude-code-config/main/skills/react-useeffect/SKILL.md → ~/.claude/skills/react-useeffect/SKILL.md
-- https://raw.githubusercontent.com/Esk3nder/claude-code-config/main/skills/react-useeffect/alternatives.md → ~/.claude/skills/react-useeffect/alternatives.md
-- https://raw.githubusercontent.com/Esk3nder/claude-code-config/main/skills/react-useeffect/anti-patterns.md → ~/.claude/skills/react-useeffect/anti-patterns.md
-- https://raw.githubusercontent.com/Esk3nder/claude-code-config/main/skills/using-workflows/SKILL.md → ~/.claude/skills/using-workflows/SKILL.md
-- https://raw.githubusercontent.com/Esk3nder/claude-code-config/main/skills/brainstorming/SKILL.md → ~/.claude/skills/brainstorming/SKILL.md
-- https://raw.githubusercontent.com/Esk3nder/claude-code-config/main/skills/writing-plans/SKILL.md → ~/.claude/skills/writing-plans/SKILL.md
-- https://raw.githubusercontent.com/Esk3nder/claude-code-config/main/skills/executing-plans/SKILL.md → ~/.claude/skills/executing-plans/SKILL.md
-- https://raw.githubusercontent.com/Esk3nder/claude-code-config/main/skills/subagent-driven-development/SKILL.md → ~/.claude/skills/subagent-driven-development/SKILL.md
-- https://raw.githubusercontent.com/Esk3nder/claude-code-config/main/skills/dispatching-parallel-agents/SKILL.md → ~/.claude/skills/dispatching-parallel-agents/SKILL.md
-- https://raw.githubusercontent.com/Esk3nder/claude-code-config/main/skills/test-driven-development/SKILL.md → ~/.claude/skills/test-driven-development/SKILL.md
-- https://raw.githubusercontent.com/Esk3nder/claude-code-config/main/skills/verification-before-completion/SKILL.md → ~/.claude/skills/verification-before-completion/SKILL.md
-- https://raw.githubusercontent.com/Esk3nder/claude-code-config/main/skills/systematic-debugging/SKILL.md → ~/.claude/skills/systematic-debugging/SKILL.md
-- https://raw.githubusercontent.com/Esk3nder/claude-code-config/main/skills/requesting-code-review/SKILL.md → ~/.claude/skills/requesting-code-review/SKILL.md
-- https://raw.githubusercontent.com/Esk3nder/claude-code-config/main/skills/receiving-code-review/SKILL.md → ~/.claude/skills/receiving-code-review/SKILL.md
-- https://raw.githubusercontent.com/Esk3nder/claude-code-config/main/skills/finishing-a-development-branch/SKILL.md → ~/.claude/skills/finishing-a-development-branch/SKILL.md
-- https://raw.githubusercontent.com/Esk3nder/claude-code-config/main/skills/using-git-worktrees/SKILL.md → ~/.claude/skills/using-git-worktrees/SKILL.md
-- https://raw.githubusercontent.com/Esk3nder/claude-code-config/main/skills/writing-skills/SKILL.md → ~/.claude/skills/writing-skills/SKILL.md
+- https://raw.githubusercontent.com/Esk3nder/claude-code-config/main/skills/PlanningWithFiles/SKILL.md → ~/.claude/skills/PlanningWithFiles/SKILL.md
+- https://raw.githubusercontent.com/Esk3nder/claude-code-config/main/skills/ReactUseEffect/SKILL.md → ~/.claude/skills/ReactUseEffect/SKILL.md
+- https://raw.githubusercontent.com/Esk3nder/claude-code-config/main/skills/UsingWorkflows/SKILL.md → ~/.claude/skills/UsingWorkflows/SKILL.md
+- https://raw.githubusercontent.com/Esk3nder/claude-code-config/main/skills/Brainstorming/SKILL.md → ~/.claude/skills/Brainstorming/SKILL.md
+- https://raw.githubusercontent.com/Esk3nder/claude-code-config/main/skills/WritingPlans/SKILL.md → ~/.claude/skills/WritingPlans/SKILL.md
+- https://raw.githubusercontent.com/Esk3nder/claude-code-config/main/skills/ExecutingPlans/SKILL.md → ~/.claude/skills/ExecutingPlans/SKILL.md
+- https://raw.githubusercontent.com/Esk3nder/claude-code-config/main/skills/SubagentDrivenDevelopment/SKILL.md → ~/.claude/skills/SubagentDrivenDevelopment/SKILL.md
+- https://raw.githubusercontent.com/Esk3nder/claude-code-config/main/skills/DispatchingParallelAgents/SKILL.md → ~/.claude/skills/DispatchingParallelAgents/SKILL.md
+- https://raw.githubusercontent.com/Esk3nder/claude-code-config/main/skills/TestDrivenDevelopment/SKILL.md → ~/.claude/skills/TestDrivenDevelopment/SKILL.md
+- https://raw.githubusercontent.com/Esk3nder/claude-code-config/main/skills/VerificationBeforeCompletion/SKILL.md → ~/.claude/skills/VerificationBeforeCompletion/SKILL.md
+- https://raw.githubusercontent.com/Esk3nder/claude-code-config/main/skills/SystematicDebugging/SKILL.md → ~/.claude/skills/SystematicDebugging/SKILL.md
+- https://raw.githubusercontent.com/Esk3nder/claude-code-config/main/skills/RequestingCodeReview/SKILL.md → ~/.claude/skills/RequestingCodeReview/SKILL.md
+- https://raw.githubusercontent.com/Esk3nder/claude-code-config/main/skills/ReceivingCodeReview/SKILL.md → ~/.claude/skills/ReceivingCodeReview/SKILL.md
+- https://raw.githubusercontent.com/Esk3nder/claude-code-config/main/skills/FinishingDevelopmentBranch/SKILL.md → ~/.claude/skills/FinishingDevelopmentBranch/SKILL.md
+- https://raw.githubusercontent.com/Esk3nder/claude-code-config/main/skills/UsingGitWorktrees/SKILL.md → ~/.claude/skills/UsingGitWorktrees/SKILL.md
+- https://raw.githubusercontent.com/Esk3nder/claude-code-config/main/skills/WritingSkills/SKILL.md → ~/.claude/skills/WritingSkills/SKILL.md
+- https://raw.githubusercontent.com/Esk3nder/claude-code-config/main/skills/Compound/SKILL.md → ~/.claude/skills/Compound/SKILL.md
+- https://raw.githubusercontent.com/Esk3nder/claude-code-config/main/skills/Review/SKILL.md → ~/.claude/skills/Review/SKILL.md
 
 **Agents** (custom subagents):
 - https://raw.githubusercontent.com/Esk3nder/claude-code-config/main/agents/codebase-search.md → ~/.claude/agents/codebase-search.md
@@ -148,7 +146,7 @@ Create directories as needed, fetch files with curl, and make hook scripts execu
 | Component | Files | Description |
 |-----------|-------|-------------|
 | Rules | 8 | TypeScript/testing/comments/Foundry + delegator orchestration |
-| Skills | 16 | Planning-with-files, React useEffect, plus the Workflows pack (brainstorm → plan → work → TDD/verification → review → finish, worktrees, writing-skills) |
+| Skills | 18 | PlanningWithFiles, ReactUseEffect, plus the Workflows pack (Brainstorming → WritingPlans → ExecutingPlans → TDD/Verification → Review/Compound → FinishingDevelopmentBranch, UsingGitWorktrees, WritingSkills) |
 | Agents | 5 + 14 review | Codebase search, media interpreter, OSS librarian, oracle, docs writer + 14 code review specialists |
 | Prompts | 5 | Codex expert prompts (delegator) |
 | Commands | 9 | Interview, Workflows brainstorm/plan/work/review/compound, delegator setup/task/uninstall |

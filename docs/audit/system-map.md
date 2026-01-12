@@ -1,173 +1,256 @@
 # System Map
 
-**Generated**: 2026-01-11
+**Last Updated:** 2026-01-12 (Pass 2)
 
 ## Overview
 
-This document maps how user requests flow through the Claude Code configuration system, from input to execution.
+This document provides a comprehensive inventory of the Claude Code configuration system, documenting all components, their relationships, and verified invariants.
 
-## Input Types
+---
 
-| Input Type | Example | Handler |
-|------------|---------|---------|
-| Natural language | "Help me debug this" | Skills (context-matched) |
-| Slash command | `/plan`, `/review` | Commands (explicit) |
-| Workflow keyword | "ultrawork", "delegate" | keyword-detector.py hook |
-| Code edit | Edit/Write tool use | check-comments.py hook |
-| Session stop | User stops or task completes | Stop hooks |
+## Entry Points
 
-## Routing Architecture
+| ID | Label | Event | Evidence |
+|----|-------|-------|----------|
+| entry:user-prompt | User Prompt | User submits text | Claude Code runtime |
+| entry:slash-command | Slash Command | User invokes `/command` | Claude Code /command syntax |
+| entry:tool-use | Tool Invocation | Model calls a tool | Claude Code tool calls |
+| entry:session-stop | Session Stop | User exits or task completes | User action |
 
-### 1. Skills (Model-Invoked)
+---
 
-Skills are discovered by Claude Code scanning `~/.claude/skills/*/SKILL.md`. Each skill contains:
-- Activation criteria (context patterns)
-- Instructions for the model
-- Supporting reference files
+## Lifecycle Hooks
 
-**Routing**: Implicit via model context matching. No explicit dispatcher.
+| ID | File | Event | Blocking | Trigger |
+|----|------|-------|----------|---------|
+| hook:keyword-detector | `hooks/keyword-detector.py` | UserPromptSubmit | No | Always |
+| hook:check-comments | `hooks/check-comments.py` | PostToolUse | No | Write\|Edit |
+| hook:require-green-tests | `hooks/workflows/require-green-tests.sh` | Stop | Yes | Always |
+| hook:todo-enforcer | `hooks/todo-enforcer.sh` | Stop | Yes | Always |
 
-| Skill | Activation Context |
-|-------|-------------------|
-| planning-with-files | Plan-based development, `plans/` directory |
-| react-useeffect | React hooks, useEffect patterns |
-| using-workflows | Workflow commands mentioned |
-| brainstorming | Ideation, exploration tasks |
-| writing-plans | Creating implementation plans |
-| executing-plans | Following existing plans |
-| subagent-driven-development | Complex multi-step tasks |
-| dispatching-parallel-agents | Parallel agent coordination |
-| test-driven-development | TDD workflow |
-| verification-before-completion | Pre-completion checks |
-| systematic-debugging | Bug investigation |
-| requesting-code-review | Review request workflow |
-| receiving-code-review | Handling review feedback |
-| finishing-a-development-branch | Branch completion workflow |
-| using-git-worktrees | Git worktree management |
-| writing-skills | Creating new skills |
+### Hook Behavior Details
 
-### 2. Commands (User-Invoked)
+**keyword-detector.py** (140 lines)
+- Detects 5 keyword patterns: ultrawork, delegation, search, analysis, think
+- Outputs: `hookSpecificOutput.additionalContext` (context injection, not dispatch)
+- Does NOT dispatch agents/skills directly
 
-Commands are discovered by Claude Code scanning `~/.claude/commands/**/*.md`. Triggered by `/command-name` syntax.
+**check-comments.py** (233 lines)
+- Analyzes code for comment ratio (threshold: 25%)
+- Validates against allowlist of valid comment patterns (BDD, JSDoc, pragmas, etc.)
+- Outputs warning in `hookSpecificOutput.additionalContext` if excessive
 
-| Command | Path | Purpose |
-|---------|------|---------|
-| `/interview` | commands/interview.md | Requirements gathering |
-| `/workflows/brainstorm` | commands/workflows/brainstorm.md | Ideation workflow |
-| `/workflows/plan` | commands/workflows/plan.md | Planning workflow |
-| `/workflows/work` | commands/workflows/work.md | Implementation workflow |
-| `/workflows/review` | commands/workflows/review.md | Code review workflow |
-| `/workflows/compound` | commands/workflows/compound.md | Multi-phase workflow |
-| `/claude-delegator/setup` | commands/claude-delegator/setup.md | Delegator installation |
-| `/claude-delegator/task` | commands/claude-delegator/task.md | Codex delegation |
-| `/claude-delegator/uninstall` | commands/claude-delegator/uninstall.md | Delegator removal |
+**require-green-tests.sh** (233 lines)
+- Auto-detects test command from lock files (npm/yarn/pnpm/bun/pytest/cargo/etc.)
+- Caches results using mtime comparison (GAP-004: TOCTOU risk)
+- Validates override commands against allowlist
+- Blocks completion if tests fail
 
-### 3. Hooks (Event-Triggered)
+**todo-enforcer.sh** (145 lines)
+- Parses transcript for TodoWrite tool calls
+- Blocks if pending/in_progress todos exist
+- Safety valve: allows exit after 10 consecutive blocks
+- Requires jq (GAP-009: fails silently if missing)
 
-Hooks are configured in `~/.claude/settings.json` under the `hooks` key. They intercept lifecycle events.
+---
 
-| Event | Hook | Trigger Condition | Effect |
-|-------|------|-------------------|--------|
-| UserPromptSubmit | keyword-detector.py | Always | Injects workflow guidance |
-| PostToolUse | check-comments.py | Tool matches `Write\|Edit` | Validates comment ratio |
-| Stop | require-green-tests.sh | Always | Blocks if tests fail |
-| Stop | todo-enforcer.sh | Always | Blocks if todos incomplete |
+## Commands (Slash Commands)
 
-### 4. Agents (Delegated Work)
+| ID | Command | Allowed Tools | Evidence |
+|----|---------|---------------|----------|
+| cmd:interview | /interview | AskUserQuestion, Read, Glob, Grep, Write, Edit | commands/interview.md |
+| cmd:workflows-brainstorm | /workflows/brainstorm | AskUserQuestion, Read, Glob, Grep | commands/workflows/brainstorm.md |
+| cmd:workflows-plan | /workflows/plan | Read, Glob, Grep, Write, Edit | commands/workflows/plan.md |
+| cmd:workflows-work | /workflows/work | Read, Glob, Grep, Write, Edit, Bash | commands/workflows/work.md |
+| cmd:workflows-review | /workflows/review | Read, Glob, Grep, Bash, TodoWrite, Task | commands/workflows/review.md |
+| cmd:workflows-compound | /workflows/compound | Read, Glob, Grep, Write, Edit | commands/workflows/compound.md |
+| cmd:delegator-setup | /claude-delegator/setup | (setup actions) | commands/claude-delegator/setup.md |
+| cmd:delegator-task | /claude-delegator/task | Read, AskUserQuestion, Bash, mcp__codex__codex | commands/claude-delegator/task.md |
+| cmd:delegator-uninstall | /claude-delegator/uninstall | (cleanup actions) | commands/claude-delegator/uninstall.md |
 
-Agents are custom subagent configurations discovered from `~/.claude/agents/**/*.md`.
+---
 
-| Agent | Purpose |
-|-------|---------|
-| codebase-search | Internal codebase exploration |
-| media-interpreter | Image/media analysis |
-| open-source-librarian | External library research |
-| oracle | High-stakes architecture and debugging |
-| tech-docs-writer | Documentation generation |
-| review/* (14 specialists) | Domain-specific code review |
+## Skills (18 total)
 
-### 5. Rules (Path-Scoped Instructions)
+| ID | Label | Directory | Trigger Pattern |
+|----|-------|-----------|-----------------|
+| skill:planning-with-files | PlanningWithFiles | skills/PlanningWithFiles | complex tasks, multi-step projects |
+| skill:brainstorming | Brainstorming | skills/Brainstorming | generate options, constraints, risks |
+| skill:writing-plans | WritingPlans | skills/WritingPlans | produce verifiable task plan |
+| skill:executing-plans | ExecutingPlans | skills/ExecutingPlans | iterate tasks, keep plan in sync |
+| skill:test-driven-development | TestDrivenDevelopment | skills/TestDrivenDevelopment | RED/GREEN/REFACTOR cycle |
+| skill:systematic-debugging | SystematicDebugging | skills/SystematicDebugging | exceptions, failing commands, CI errors |
+| skill:verification-before-completion | VerificationBeforeCompletion | skills/VerificationBeforeCompletion | run checks before delivery |
+| skill:subagent-driven-development | SubagentDrivenDevelopment | skills/SubagentDrivenDevelopment | break into parallelizable chunks |
+| skill:dispatching-parallel-agents | DispatchingParallelAgents | skills/DispatchingParallelAgents | parallel agent dispatch |
+| skill:requesting-code-review | RequestingCodeReview | skills/RequestingCodeReview | prepare review summary |
+| skill:receiving-code-review | ReceivingCodeReview | skills/ReceivingCodeReview | process reviewer feedback |
+| skill:finishing-a-development-branch | FinishingDevelopmentBranch | skills/FinishingDevelopmentBranch | finalize branch safely |
+| skill:using-git-worktrees | UsingGitWorktrees | skills/UsingGitWorktrees | parallel work via worktrees |
+| skill:using-workflows | UsingWorkflows | skills/UsingWorkflows | check/invoke workflow skills |
+| skill:writing-skills | WritingSkills | skills/WritingSkills | author/update skills |
+| skill:react-useeffect | ReactUseEffect | skills/ReactUseEffect | React useEffect best practices |
+| skill:compound | Compound | skills/Compound | capture solved problems |
+| skill:review | Review | skills/Review | focused code review |
 
-Rules are loaded based on file path patterns from `~/.claude/rules/**/*.md`.
+### Skill Activation Mechanism
 
-| Rule | Scope |
-|------|-------|
-| typescript.md | TypeScript files |
-| testing.md | Test files |
-| comments.md | All code files |
-| forge.md | Foundry/Solidity projects |
-| delegator/*.md | Codex delegation |
+Skills are activated via **implicit context matching** by the model based on:
+1. `USE WHEN` clause in SKILL.md description
+2. Keywords in user prompt
+3. Context from previous tool calls
 
-### 6. Prompts (Codex Experts)
+**Note:** No code enforces skill activation - it's purely model discretion (GAP-013).
 
-Prompts define expert personas for Codex MCP delegation. Mapped via `config/delegator/experts.json`.
+---
 
-| Expert | Prompt | Native Agent |
-|--------|--------|--------------|
-| architect | architect.md | architecture-strategist |
-| plan-reviewer | plan-reviewer.md | writing-plans, planning-with-files |
-| scope-analyst | scope-analyst.md | interview command |
-| code-reviewer | code-reviewer.md | code-simplicity, pattern-recognition |
-| security-analyst | security-analyst.md | security-sentinel |
+## Agents (19 total)
 
-## Hook Wiring Configuration
+### General Purpose Agents (5)
 
-Required `~/.claude/settings.json` snippet:
+| ID | Label | Model | Purpose |
+|----|-------|-------|---------|
+| agent:codebase-search | codebase-search | haiku | Find patterns in codebase |
+| agent:open-source-librarian | open-source-librarian | sonnet | External docs, OSS examples |
+| agent:oracle | oracle | opus | Architecture, debugging |
+| agent:tech-docs-writer | tech-docs-writer | sonnet | README, API docs |
+| agent:media-interpreter | media-interpreter | sonnet | Image/media analysis |
+
+### Review Agents (14)
+
+| ID | Label | Model | Trigger Condition |
+|----|-------|-------|-------------------|
+| agent:review-security-sentinel | security-sentinel | haiku | >3 files OR risky areas |
+| agent:review-architecture-strategist | architecture-strategist | sonnet | >3 files OR risky areas |
+| agent:review-typescript | typescript | haiku | .ts/.tsx files |
+| agent:review-python | python | haiku | .py files |
+| agent:review-rails | rails | haiku | .rb files OR Gemfile |
+| agent:review-dhh-rails | dhh-rails | sonnet | Conventional Rails |
+| agent:review-data-migration-expert | data-migration-expert | sonnet | DB migrations |
+| agent:review-data-integrity-guardian | data-integrity-guardian | sonnet | DB migrations |
+| agent:review-deployment-verification | deployment-verification | sonnet | Config/deploy files |
+| agent:review-frontend-races | frontend-races | sonnet | Frontend async/state |
+| agent:review-performance-oracle | performance-oracle | sonnet | Perf-sensitive paths |
+| agent:review-agent-native | agent-native | sonnet | Agent/prompt files |
+| agent:review-code-simplicity | code-simplicity | haiku | Complex logic |
+| agent:review-pattern-recognition | pattern-recognition | sonnet | Pattern violations |
+
+---
+
+## Codex Experts (5)
+
+| ID | Label | Mode | Purpose |
+|----|-------|------|---------|
+| expert:architect | architect | advisory | Architecture, tradeoffs |
+| expert:plan-reviewer | plan-reviewer | advisory | Review plans |
+| expert:scope-analyst | scope-analyst | advisory | Ambiguous scope |
+| expert:code-reviewer | code-reviewer | advisory | Code review |
+| expert:security-analyst | security-analyst | advisory | Security review |
+
+---
+
+## Rules (8)
+
+| ID | Label | Scope | Evidence |
+|----|-------|-------|----------|
+| rule:typescript | typescript.md | **/*.{ts,tsx} | rules/typescript.md |
+| rule:testing | testing.md | **/*.{test,spec}.ts | rules/testing.md |
+| rule:comments | comments.md | all | rules/comments.md |
+| rule:forge | forge.md | **/*.sol | rules/forge.md |
+| rule:delegator-orchestration | delegator/orchestration.md | delegation | rules/delegator/orchestration.md |
+| rule:delegator-triggers | delegator/triggers.md | delegation | rules/delegator/triggers.md |
+| rule:delegator-model-selection | delegator/model-selection.md | delegation | rules/delegator/model-selection.md |
+| rule:delegator-delegation-format | delegator/delegation-format.md | delegation | rules/delegator/delegation-format.md |
+
+---
+
+## Verified Invariants
+
+### INV-001: No Bypass
+**Statement:** No capability/tool execution path skips required routing + required lifecycle stages.
+**Status:** PARTIALLY VERIFIED
+**Evidence:**
+- All slash commands go through Claude Code routing
+- PostToolUse hooks fire on Write/Edit
+- Stop hooks fire on session end
+**Gaps:** keyword-detector suggestions can be ignored (GAP-001)
+
+### INV-002: Lifecycle Reliability
+**Statement:** Required lifecycle stages fire on success, error, stop/abort, and teardown.
+**Status:** PARTIALLY VERIFIED
+**Evidence:**
+- Stop hooks have safety valve (10 blocks max)
+- Hooks are non-blocking by default (except Stop)
+**Gaps:** Hook ordering undefined (GAP-019)
+
+### INV-003: Canonical Routing
+**Statement:** One explicit decision point selects module/capability invocation.
+**Status:** VERIFIED
+**Evidence:**
+- Slash commands route to specific command handlers
+- Review command uses explicit routing table
+
+### INV-004: Deterministic Boundaries
+**Statement:** Policy/validation is deterministic; LLM only at explicit gates.
+**Status:** PARTIALLY VERIFIED
+**Evidence:**
+- Hooks are code-based (deterministic)
+- Skill activation is model-discretionary (non-deterministic)
+**Gaps:** Skill activation not enforced (GAP-013)
+
+### INV-005: Auditability
+**Statement:** Every routed action produces traceable artifacts.
+**Status:** PARTIALLY VERIFIED
+**Evidence:**
+- Transcript captures all tool calls
+- Debug logs capture hook invocations
+**Gaps:** Unbounded logging (GAP-006, GAP-018)
+
+### INV-006: Testability
+**Statement:** Each invariant has at least one automated test.
+**Status:** NOT VERIFIED
+**Evidence:** Only structure_test.sh and schema_test.py exist
+**Gaps:** No invariant tests (see test-plan.md)
+
+---
+
+## Configuration
+
+### settings.json Structure
 
 ```json
 {
   "hooks": {
-    "UserPromptSubmit": [
-      { "hooks": [{ "type": "command", "command": "./hooks/keyword-detector.py" }] }
-    ],
-    "PostToolUse": [
-      { "matcher": "Write|Edit", "hooks": [{ "type": "command", "command": "./hooks/check-comments.py" }] }
-    ],
-    "Stop": [
-      { "hooks": [{ "type": "command", "command": "./hooks/workflows/require-green-tests.sh" }] },
-      { "hooks": [{ "type": "command", "command": "./hooks/todo-enforcer.sh" }] }
-    ]
+    "UserPromptSubmit": [{ "hooks": [{"type": "command", "command": "..."}] }],
+    "PostToolUse": [{ "matcher": "Write|Edit", "hooks": [...] }],
+    "Stop": [{ "hooks": [...] }, { "hooks": [...] }]
   }
 }
 ```
 
-## Environment Variables
+### Key Paths
 
-| Variable | Used By | Purpose | Default |
-|----------|---------|---------|---------|
-| WORKFLOWS_TEST_CMD | require-green-tests.sh | Override test command | Auto-detected |
-| SUPERPOWERS_TEST_CMD | require-green-tests.sh | Legacy alias | - |
-| WORKFLOWS_TEST_MAX_OUTPUT_LINES | require-green-tests.sh | Truncate printed test output | 200 |
-| REPO_ROOT | All hooks | Repository root path | `git rev-parse --show-toplevel` |
+| Path | Purpose |
+|------|---------|
+| `~/.claude/settings.json` | Global settings |
+| `~/.claude/settings.local.json` | Local overrides |
+| `~/.claude/hooks/` | Hook logs |
+| `~/.claude/prompts/delegator/` | Expert prompts |
+| `.claude/.state/` | Repo-local state (test cache) |
 
-## State Files
+---
 
-| File | Purpose | Created By |
-|------|---------|------------|
-| `.claude/.state/last_tests.env` | Test result cache | require-green-tests.sh |
-| `plans/*.md` | Implementation plans | writing-plans skill |
+## Count Summary
 
-## Error/Stop Paths
-
-### Stop Hook Behavior
-
-1. **require-green-tests.sh**:
-   - Detects test framework (pnpm/yarn/npm via lockfile)
-   - Runs `$TEST_CMD test` or user-specified command
-   - Caches passing results to avoid re-running
-   - Blocks exit with guidance message if tests fail
-
-2. **todo-enforcer.sh**:
-   - Checks for incomplete todo items
-   - Blocks exit if todos remain
-   - Safety valve: allows exit after 10 consecutive blocks
-
-### Hook Failure Modes
-
-| Failure | Hook | User Experience |
-|---------|------|-----------------|
-| Tests fail | require-green-tests.sh | Exit blocked, message shown |
-| Todos incomplete | todo-enforcer.sh | Exit blocked, message shown |
-| jq missing | todo-enforcer.sh | Logs error and allows exit (no user-facing warning) |
-| Python missing | keyword-detector.py | Hook fails silently |
-| Invalid JSON in tool output | check-comments.py | Attempts repair, may fail |
+| Component | Count |
+|-----------|-------|
+| Entry Points | 4 |
+| Hooks | 4 |
+| Commands | 9 |
+| Skills | 18 |
+| Agents | 19 |
+| Experts | 5 |
+| Rules | 8 |
+| Context Modes | 5 |
+| **Total Nodes** | **72** |
+| **Total Edges** | **47** |

@@ -1,4 +1,9 @@
 %%{init: {'theme': 'neutral'}}%%
+%% Router Map - Claude Code Config
+%% Generated from graph.json (Pass 2)
+%% Last Updated: 2026-01-12
+%% KEY CORRECTION: keyword-detector only injects context (suggestions), does not dispatch
+
 flowchart TB
     subgraph Input["User Input"]
         NL[Natural Language]
@@ -14,10 +19,18 @@ flowchart TB
     end
 
     subgraph HookScripts["Hook Scripts"]
-        KD[keyword-detector.py]
+        KD[keyword-detector.py<br/>CONTEXT INJECTION ONLY]
         CC[check-comments.py]
         RGT[require-green-tests.sh]
         TE2[todo-enforcer.sh]
+    end
+
+    subgraph Context["Context Modes<br/>⚠️ SUGGESTIONS ONLY - NOT ENFORCED"]
+        UW[Ultrawork Mode<br/>ultrawork/ulw]
+        DM[Delegation Mode<br/>delegate/parallel/codex]
+        SM[Search Mode<br/>search/find/locate]
+        AM[Analysis Mode<br/>analyze/debug]
+        TM[Think Mode<br/>think deeply]
     end
 
     subgraph Discovery["Discovery Layer"]
@@ -28,10 +41,14 @@ flowchart TB
     end
 
     subgraph Execution["Execution"]
-        SK[Skills<br/>16 capabilities]
+        SK[Skills<br/>18 capabilities]
         CM[Commands<br/>9 slash commands]
         AG[Agents<br/>19 subagents]
         RL[Rules<br/>8 path-scoped]
+    end
+
+    subgraph ReviewAgents["Review Dispatch<br/>CONDITIONAL by file type"]
+        RA[security-sentinel<br/>architecture-strategist<br/>typescript/python/rails<br/>...11 more]
     end
 
     subgraph External["External Delegation"]
@@ -57,8 +74,18 @@ flowchart TB
     STP --> RGT
     STP --> TE2
 
-    %% Hook effects
-    KD --> INJ
+    %% Hook effects - NOTE: dotted lines = suggestions only
+    KD -.->|"suggests"| UW
+    KD -.->|"suggests"| DM
+    KD -.->|"suggests"| SM
+    KD -.->|"suggests"| AM
+    KD -.->|"suggests"| TM
+    UW -.-> INJ
+    DM -.-> INJ
+    SM -.-> INJ
+    AM -.-> INJ
+    TM -.-> INJ
+
     CC --> RES
     RGT --> BLK
     RGT --> RES
@@ -78,8 +105,12 @@ flowchart TB
     AG --> RES
     RL --> SK
 
+    %% Review command dispatches agents conditionally
+    CM -->|"/workflows/review"| RA
+    RA --> RES
+
     %% Delegation
-    CM --> CX
+    CM -->|"/claude-delegator/task"| CX
     CX --> EX
     EX --> RES
 
@@ -90,6 +121,8 @@ flowchart TB
     classDef execution fill:#e8f5e9,stroke:#2e7d32
     classDef external fill:#fce4ec,stroke:#c2185b
     classDef output fill:#eceff1,stroke:#455a64
+    classDef context fill:#fffde7,stroke:#f9a825
+    classDef review fill:#e3f2fd,stroke:#1565c0
 
     class NL,SC,TE,ST input
     class UPS,PTU,STP,KD,CC,RGT,TE2 hook
@@ -97,3 +130,5 @@ flowchart TB
     class SK,CM,AG,RL execution
     class CX,EX external
     class RES,BLK,INJ output
+    class UW,DM,SM,AM,TM context
+    class RA review

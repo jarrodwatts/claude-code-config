@@ -38,6 +38,11 @@ settings.local.json
 !tests/
 !tests/**
 
+# Open source essentials
+!LICENSE
+!CONTRIBUTING.md
+!CODE_OF_CONDUCT.md
+
 # Include GitHub Actions workflows
 !.github/
 !.github/**

@@ -74,12 +74,12 @@ RULE_COUNT=$(find "$REPO_ROOT/rules" -name "*.md" 2>/dev/null | wc -l | tr -d ' 
 
 echo "Skills: $SKILL_COUNT (expected 18)"
 echo "Agents: $AGENT_COUNT (expected 19)"
-echo "Hooks: $HOOK_COUNT (expected 4)"
+echo "Hooks: $HOOK_COUNT (expected 5)"
 echo "Rules: $RULE_COUNT (expected 8)"
 
 [[ "$SKILL_COUNT" -eq 18 ]] || { echo "FAIL: Skills count $SKILL_COUNT != 18"; ((FAILURES++)); }
 [[ "$AGENT_COUNT" -eq 19 ]] || { echo "FAIL: Agents count $AGENT_COUNT != 19"; ((FAILURES++)); }
-[[ "$HOOK_COUNT" -eq 4 ]] || { echo "FAIL: Hooks count $HOOK_COUNT != 4"; ((FAILURES++)); }
+[[ "$HOOK_COUNT" -eq 5 ]] || { echo "FAIL: Hooks count $HOOK_COUNT != 5"; ((FAILURES++)); }
 [[ "$RULE_COUNT" -eq 8 ]] || { echo "FAIL: Rules count $RULE_COUNT != 8"; ((FAILURES++)); }
 
 echo ""

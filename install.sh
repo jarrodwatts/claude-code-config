@@ -257,6 +257,61 @@ make_hooks_executable() {
     fi
 }
 
+# Migrate skills from kebab-case to TitleCase
+migrate_skills() {
+    local skills_dir="$CLAUDE_DIR/skills"
+
+    # Map of old kebab-case names to new TitleCase names
+    declare -A SKILL_MIGRATION=(
+        ["brainstorming"]="Brainstorming"
+        ["compound"]="Compound"
+        ["dispatching-parallel-agents"]="DispatchingParallelAgents"
+        ["executing-plans"]="ExecutingPlans"
+        ["finishing-a-development-branch"]="FinishingDevelopmentBranch"
+        ["planning-with-files"]="PlanningWithFiles"
+        ["react-useeffect"]="ReactUseEffect"
+        ["receiving-code-review"]="ReceivingCodeReview"
+        ["requesting-code-review"]="RequestingCodeReview"
+        ["review"]="Review"
+        ["subagent-driven-development"]="SubagentDrivenDevelopment"
+        ["systematic-debugging"]="SystematicDebugging"
+        ["test-driven-development"]="TestDrivenDevelopment"
+        ["using-git-worktrees"]="UsingGitWorktrees"
+        ["using-workflows"]="UsingWorkflows"
+        ["verification-before-completion"]="VerificationBeforeCompletion"
+        ["writing-plans"]="WritingPlans"
+        ["writing-skills"]="WritingSkills"
+    )
+
+    local migrated=0
+    for old_name in "${!SKILL_MIGRATION[@]}"; do
+        local old_path="$skills_dir/$old_name"
+        local new_name="${SKILL_MIGRATION[$old_name]}"
+        local new_path="$skills_dir/$new_name"
+
+        if [[ -d "$old_path" && ! -d "$new_path" ]]; then
+            # Old exists, new doesn't - just remove old (new will be installed)
+            rm -rf "$old_path"
+            log_info "Removed legacy skill: $old_name"
+            ((migrated++))
+        elif [[ -d "$old_path" && -d "$new_path" ]]; then
+            # Both exist - remove old, keep new
+            rm -rf "$old_path"
+            log_info "Cleaned up duplicate: $old_name"
+            ((migrated++))
+        elif [[ -d "$old_path" ]]; then
+            # Old exists - remove it
+            rm -rf "$old_path"
+            log_info "Removed legacy skill: $old_name"
+            ((migrated++))
+        fi
+    done
+
+    if [[ $migrated -gt 0 ]]; then
+        log_success "Migrated $migrated legacy skill directories"
+    fi
+}
+
 main() {
     parse_args "$@"
 
@@ -281,6 +336,9 @@ main() {
     # Install components
     log_info "Installing rules..."
     install_dir "$SCRIPT_DIR/rules" "$CLAUDE_DIR/rules" "*.md"
+
+    log_info "Migrating legacy skills..."
+    migrate_skills
 
     log_info "Installing skills..."
     install_dir "$SCRIPT_DIR/skills" "$CLAUDE_DIR/skills" "*.md"
