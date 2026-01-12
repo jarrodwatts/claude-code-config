@@ -37,3 +37,7 @@ settings.local.json
 !settings.json.example
 !tests/
 !tests/**
+
+# Include GitHub Actions workflows
+!.github/
+!.github/**

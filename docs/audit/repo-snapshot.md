@@ -1,8 +1,8 @@
 # Repo Snapshot
 
-**Generated**: 2026-01-12
-**Repository**: claude-code-config (richmond)
-**Branch**: Esk3nder/audit-wiring
+**Generated**: 2026-01-11
+**Repository**: claude-code-config (philadelphia)
+**Branch**: Esk3nder/audit-routing-claims
 
 ## Repository Structure
 

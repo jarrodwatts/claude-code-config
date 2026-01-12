@@ -1,13 +1,13 @@
 # Gap & Missing Features Ledger
 
-**Generated**: 2026-01-12
+**Generated**: 2026-01-11
 
 ## Summary by Severity
 
 | Severity | Count | Description |
 |----------|-------|-------------|
 | P0 | 0 | Critical: security vulnerability |
-| P1 | 2 | High: Security issues, missing automation |
+| P1 | 1 | High: TOCTOU race in test cache |
 | P2 | 5 | Medium: Info disclosure, robustness, maintenance, UX |
 
 ## P0 - Critical Issues
@@ -37,18 +37,8 @@
 - **Verification**: Manual race condition test
 
 ### GAP-005: No Automated Installation Verification
-- **Type**: Verification gap
-- **Severity**: P1
-- **Evidence**: No CI workflow; repo has local checks under `tests/` but they are not run automatically and do not validate an actual `~/.claude/` install
-- **Impact**: Installation can silently fail; regressions not caught automatically
-- **Minimal Fix**: Add CI (or a dedicated verification script) to validate an actual `~/.claude/` install; at minimum run the existing repo checks:
-  1. `bash tests/structure_test.sh`
-  2. `python3 tests/schema_test.py`
- - **Verification**:
-  ```bash
-  bash tests/structure_test.sh
-  python3 tests/schema_test.py
-  ```
+- **Status**: RESOLVED
+- **Evidence**: `.github/workflows/ci.yml` now runs `structure_test.sh` and `schema_test.py` on push/PR to main
 
 ## P2 - Medium Priority Issues
 
@@ -141,7 +131,7 @@
 | GAP-002 | Security | RESOLVED | Low | Yes |
 | GAP-003 | Security | RESOLVED | Low | Yes |
 | GAP-004 | Security | P1 | Medium | Manual |
-| GAP-005 | Verification | P1 | Medium | Yes |
+| GAP-005 | Verification | RESOLVED | Medium | Yes |
 | GAP-006 | Security | P2 | Low | Manual |
 | GAP-007 | Security | RESOLVED | Low | Yes |
 | GAP-008 | Security | RESOLVED | Low | Yes |
