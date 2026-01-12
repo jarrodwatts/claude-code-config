@@ -52,7 +52,7 @@ assert_exists "config/delegator/experts.json"
 
 echo ""
 echo "--- Directories ---"
-assert_dir_exists "docs/solutions"
+assert_dir_exists "plans/solutions"
 assert_dir_exists "agents"
 assert_dir_exists "agents/review"
 assert_dir_exists "skills"
@@ -68,7 +68,7 @@ echo ""
 echo "=== Count Verification ==="
 
 SKILL_COUNT=$(find "$REPO_ROOT/skills" -name "SKILL.md" 2>/dev/null | wc -l | tr -d ' ')
-AGENT_COUNT=$(find "$REPO_ROOT/agents" -name "*.md" ! -name "index.md" 2>/dev/null | wc -l | tr -d ' ')
+AGENT_COUNT=$(find "$REPO_ROOT/agents" -name "*.md" ! -name "index.md" ! -name "README.md" 2>/dev/null | wc -l | tr -d ' ')
 HOOK_COUNT=$(find "$REPO_ROOT/hooks" -type f \( -name "*.py" -o -name "*.sh" \) 2>/dev/null | wc -l | tr -d ' ')
 RULE_COUNT=$(find "$REPO_ROOT/rules" -name "*.md" 2>/dev/null | wc -l | tr -d ' ')
 
