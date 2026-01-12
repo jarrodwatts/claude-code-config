@@ -1,8 +1,8 @@
 # Repo Snapshot
 
-**Generated**: 2026-01-11
+**Generated**: 2026-01-12
 **Repository**: claude-code-config (richmond)
-**Branch**: Esk3nder/richmond
+**Branch**: Esk3nder/audit-wiring
 
 ## Repository Structure
 
@@ -11,12 +11,15 @@ claude-code-config/
 ├── CLAUDE.md                 # Global instructions (project root)
 ├── README.md                 # Project documentation (702 lines)
 ├── INSTALL.md                # Installation guide (163 lines)
-├── agents/                   # Custom subagents (19 files)
+├── install.sh                # Installer (copies config to ~/.claude/)
+├── settings.json.example     # Hook wiring template
+├── agents/                   # Custom subagents (19 agent defs + index)
 │   ├── codebase-search.md
 │   ├── media-interpreter.md
 │   ├── open-source-librarian.md
+│   ├── oracle.md
 │   ├── tech-docs-writer.md
-│   └── review/               # Review specialist agents (15 files)
+│   └── review/               # Review specialist agents (14 files + index)
 │       ├── index.md
 │       ├── agent-native.md
 │       ├── architecture-strategist.md
@@ -72,6 +75,9 @@ claude-code-config/
 │       ├── triggers.md
 │       ├── model-selection.md
 │       └── delegation-format.md
+├── tests/                    # Repo validation checks
+│   ├── schema_test.py
+│   └── structure_test.sh
 └── skills/                   # Model-invoked capabilities (16 directories)
     ├── planning-with-files/
     ├── react-useeffect/
@@ -110,11 +116,11 @@ claude-code-config/
 | Entrypoint | Type | Trigger |
 |------------|------|---------|
 | `/interview` | Command | User types `/interview` |
-| `/workflows/brainstorm` | Command | User types `/brainstorm` |
-| `/workflows/plan` | Command | User types `/plan` |
-| `/workflows/work` | Command | User types `/work` |
-| `/workflows/review` | Command | User types `/review` |
-| `/workflows/compound` | Command | User types `/compound` |
+| `/workflows/brainstorm` | Command | User types `/workflows/brainstorm` |
+| `/workflows/plan` | Command | User types `/workflows/plan` |
+| `/workflows/work` | Command | User types `/workflows/work` |
+| `/workflows/review` | Command | User types `/workflows/review` |
+| `/workflows/compound` | Command | User types `/workflows/compound` |
 | `/claude-delegator/setup` | Command | User types `/claude-delegator/setup` |
 | `/claude-delegator/task` | Command | User types `/claude-delegator/task` |
 | `/claude-delegator/uninstall` | Command | User types `/claude-delegator/uninstall` |
@@ -141,7 +147,7 @@ Skills are auto-activated by Claude Code based on context matching in `SKILL.md`
    git clone https://github.com/Esk3nder/claude-code-config.git /tmp/claude-config
    cd /tmp/claude-config && ./install.sh
    ```
-   **STATUS: BROKEN** - `install.sh` does not exist in repository.
+   **STATUS: WORKING** - `install.sh` exists and installs config into `~/.claude/` (including hook wiring via `settings.json.example`).
 
 2. **Manual Install via Claude Code** (INSTALL.md line 14-141):
    - Copy prompt into Claude Code
@@ -152,7 +158,7 @@ Skills are auto-activated by Claude Code based on context matching in `SKILL.md`
 
 - Files must be installed to `~/.claude/` directory
 - Hook scripts require executable permission (`chmod +x`)
-- Hook wiring requires manual `settings.json` configuration
+- Hook wiring requires `settings.json` configuration (manual merge for manual install; `install.sh` can merge via `settings.json.example`)
 - Dependencies: `jq` (todo-enforcer.sh), `python3` (keyword-detector.py, check-comments.py)
 
 ## Verification Commands
@@ -164,6 +170,8 @@ Skills are auto-activated by Claude Code based on context matching in `SKILL.md`
 | Shell syntax | `bash -n hooks/*.sh hooks/workflows/*.sh` | Exit 0 = valid |
 | JSON validity | `jq . config/delegator/*.json` | Exit 0 = valid |
 | File existence | `find skills -name "SKILL.md"` | Should find 16 files |
+| Repo structure | `bash tests/structure_test.sh` | Verifies required files + counts |
+| Repo schema | `python3 tests/schema_test.py` | Validates frontmatter + JSON |
 
 ## Evidence
 

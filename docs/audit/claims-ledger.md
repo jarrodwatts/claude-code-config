@@ -1,14 +1,14 @@
 # Claims Ledger
 
-**Generated**: 2026-01-11
+**Generated**: 2026-01-12
 
 ## Summary
 
 | Outcome | Count |
 |---------|-------|
-| TRUE | 28 |
+| TRUE | 29 |
 | PARTIAL | 2 |
-| FALSE | 1 |
+| FALSE | 0 |
 | UNVERIFIABLE | 0 |
 
 ## Component Count Claims
@@ -35,16 +35,30 @@
   - skills/using-git-worktrees/SKILL.md
   - skills/writing-skills/SKILL.md
 
-### Claim 2: "Agents (19)" / "4 + 15 review specialists"
+### Claim 2: "Agents (19)" / "5 + 14 review specialists"
 - **Source**: README.md, INSTALL.md table
 - **Outcome**: TRUE
-- **Evidence**: 4 root agents + 15 review agents = 19
+- **Evidence**: 5 root agents + 14 review agents = 19 (excluding `agents/review/index.md`, which is a non-agent index file)
 - **Files**:
   - agents/codebase-search.md
   - agents/media-interpreter.md
   - agents/open-source-librarian.md
+  - agents/oracle.md
   - agents/tech-docs-writer.md
-  - agents/review/index.md (+ 14 specialist .md files)
+  - agents/review/agent-native.md
+  - agents/review/architecture-strategist.md
+  - agents/review/code-simplicity.md
+  - agents/review/data-integrity-guardian.md
+  - agents/review/data-migration-expert.md
+  - agents/review/deployment-verification.md
+  - agents/review/dhh-rails.md
+  - agents/review/frontend-races.md
+  - agents/review/pattern-recognition.md
+  - agents/review/performance-oracle.md
+  - agents/review/python.md
+  - agents/review/rails.md
+  - agents/review/security-sentinel.md
+  - agents/review/typescript.md
 
 ### Claim 3: "Hooks (4)"
 - **Source**: README.md, INSTALL.md table
@@ -109,10 +123,8 @@
 
 ### Claim 8: "Quick Install" via install.sh
 - **Source**: README.md line 5-8, INSTALL.md line 5-8
-- **Outcome**: FALSE
-- **Evidence**: `./install.sh` does not exist in repository
-- **Counter-evidence**: `find . -name "install.sh"` returns empty
-- **Fix**: Create install.sh or update documentation
+- **Outcome**: TRUE
+- **Evidence**: `install.sh` exists and installs repo contents into `~/.claude/`, makes hooks executable, and merges hook wiring from `settings.json.example`
 
 ### Claim 9: "Manual Install via Claude Code"
 - **Source**: INSTALL.md line 14-141
@@ -137,7 +149,7 @@
 ### Claim 12: "Comment ratio validation"
 - **Source**: README.md
 - **Outcome**: TRUE
-- **Evidence**: hooks/check-comments.py:150-200 calculates comment ratio, blocks if >25%
+- **Evidence**: hooks/check-comments.py calculates comment ratio and emits a warning via `hookSpecificOutput.additionalContext` when comment ratio exceeds 25% (does not block tool execution)
 
 ### Claim 13: "Test enforcement before completion"
 - **Source**: README.md, skills/verification-before-completion
@@ -152,7 +164,7 @@
 ### Claim 15: "Safety valve after 10 blocks"
 - **Source**: hooks/todo-enforcer.sh:18
 - **Outcome**: TRUE
-- **Evidence**: Line 18 defines `SAFETY_VALVE=10`, line 118 implements the check
+- **Evidence**: `MAX_CONSECUTIVE_BLOCKS=10` and the safety valve allows exit after 10 consecutive blocks
 
 ### Claim 16: "Auto-detects test framework"
 - **Source**: README.md
@@ -245,16 +257,8 @@
 | Category | TRUE | PARTIAL | FALSE |
 |----------|------|---------|-------|
 | Component Counts | 7 | 0 | 0 |
-| Installation | 2 | 0 | 1 |
+| Installation | 3 | 0 | 0 |
 | Features | 10 | 0 | 0 |
 | Delegator | 3 | 1 | 0 |
 | Workflows | 6 | 1 | 0 |
-| **Total** | **28** | **2** | **1** |
-
-## P0 False Claim
-
-**Claim 8 (install.sh)** is the only FALSE claim and is severity P0:
-- Both README.md and INSTALL.md reference `./install.sh` as the recommended installation method
-- File does not exist
-- Users following documentation will encounter immediate failure
-- **Fix**: Create install.sh script or update docs to remove reference
+| **Total** | **29** | **2** | **0** |

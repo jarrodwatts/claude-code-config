@@ -1,98 +1,53 @@
 # Gap & Missing Features Ledger
 
-**Generated**: 2026-01-11
+**Generated**: 2026-01-12
 
 ## Summary by Severity
 
 | Severity | Count | Description |
 |----------|-------|-------------|
-| P0 | 2 | Critical: Security vulnerability, broken install |
-| P1 | 3 | High: Security issues, missing automation |
-| P2 | 5 | Medium: Info disclosure, robustness, UX |
+| P0 | 0 | Critical: security vulnerability |
+| P1 | 2 | High: Security issues, missing automation |
+| P2 | 5 | Medium: Info disclosure, robustness, maintenance, UX |
 
 ## P0 - Critical Issues
 
 ### GAP-001: install.sh Does Not Exist
-- **Type**: Broken wiring / False claim
-- **Severity**: P0
+- **Status**: RESOLVED
 - **Evidence**:
-  - README.md line 5-8 references `./install.sh`
-  - INSTALL.md line 5-8 references `./install.sh`
-  - `find . -name "install.sh"` returns empty
-- **Impact**: Users cannot use documented quick install method; immediate failure on clone
-- **Minimal Fix**: Create install.sh that:
-  1. Copies files to ~/.claude/
-  2. Sets executable permissions on hooks
-  3. Merges hook wiring into settings.json
-- **Verification**:
-  ```bash
-  ./install.sh && test -f ~/.claude/hooks/keyword-detector.py
-  ```
+  - `install.sh` exists at repo root
+  - `tests/structure_test.sh` asserts `install.sh` exists
 
 ### GAP-002: Command Injection via WORKFLOWS_TEST_CMD
-- **Type**: Security footgun
-- **Severity**: P0
-- **Evidence**: hooks/workflows/require-green-tests.sh lines 10-15, 50
-  ```bash
-  if [[ -n "${WORKFLOWS_TEST_CMD-}" ]]; then
-    echo "$WORKFLOWS_TEST_CMD"  # Unvalidated
-    return
-  fi
-  # ...
-  OUTPUT=$(cd "$REPO_ROOT" && bash -lc "$TEST_CMD" 2>&1)  # Injection point
-  ```
-- **Impact**: Malicious .env file or environment can execute arbitrary commands
-- **Minimal Fix**:
-  1. Validate WORKFLOWS_TEST_CMD against allowlist of safe commands
-  2. Or: remove env var override, only use lockfile detection
-- **Verification**:
-  ```bash
-  WORKFLOWS_TEST_CMD="rm -rf /tmp/test; echo pwned" ./hooks/workflows/require-green-tests.sh
-  # Should reject invalid command
-  ```
+- **Status**: RESOLVED
+- **Evidence**: hooks/workflows/require-green-tests.sh now validates `WORKFLOWS_TEST_CMD`/`SUPERPOWERS_TEST_CMD` (rejects unsafe characters + non-test commands) and shells out via a safely-quoted `bash -lc` command
 
 ## P1 - High Priority Issues
 
 ### GAP-003: Code Execution via State File Sourcing
-- **Type**: Security footgun
-- **Severity**: P1
-- **Evidence**: hooks/workflows/require-green-tests.sh line 55
-  ```bash
-  source "$STATE_FILE"  # Sources .claude/.state/last_tests.env
-  ```
-- **Impact**: If attacker can write to .claude/.state/, arbitrary code execution
-- **Minimal Fix**:
-  1. Parse state file as key=value without sourcing
-  2. Or: validate file contents before sourcing
-- **Verification**:
-  ```bash
-  echo 'echo PWNED' > .claude/.state/last_tests.env
-  ./hooks/workflows/require-green-tests.sh
-  # Should not print PWNED
-  ```
+- **Status**: RESOLVED
+- **Evidence**: hooks/workflows/require-green-tests.sh no longer `source`s the state file; it parses expected keys and validates values
 
 ### GAP-004: TOCTOU Race in Test Cache
 - **Type**: Security footgun / Reliability gap
 - **Severity**: P1
-- **Evidence**: hooks/workflows/require-green-tests.sh lines 60-70
-  - Checks `LAST_SHA` against current SHA
-  - Gap between check and test execution
-- **Impact**: Test results can be poisoned; passing tests cached for failing code
+- **Evidence**: hooks/workflows/require-green-tests.sh caches `PREV_STATUS`, `PREV_CMD_HASH`, and `PREV_MTIME` and compares `PREV_MTIME` to the newest tracked file mtime; there is no locking around the cache check/update
+- **Impact**: Tests may be skipped when the working tree changes between cache check and cache write
 - **Minimal Fix**: Add file lock or atomic cache update
 - **Verification**: Manual race condition test
 
 ### GAP-005: No Automated Installation Verification
 - **Type**: Verification gap
 - **Severity**: P1
-- **Evidence**: No CI workflow, no test script for installation
-- **Impact**: Installation can silently fail; no regression detection
-- **Minimal Fix**: Add scripts/verify-install.sh that checks:
-  1. All files exist in ~/.claude/
-  2. Hook scripts are executable
-  3. settings.json has hook wiring
-- **Verification**:
+- **Evidence**: No CI workflow; repo has local checks under `tests/` but they are not run automatically and do not validate an actual `~/.claude/` install
+- **Impact**: Installation can silently fail; regressions not caught automatically
+- **Minimal Fix**: Add CI (or a dedicated verification script) to validate an actual `~/.claude/` install; at minimum run the existing repo checks:
+  1. `bash tests/structure_test.sh`
+  2. `python3 tests/schema_test.py`
+ - **Verification**:
   ```bash
-  ./scripts/verify-install.sh && echo "Install OK"
+  bash tests/structure_test.sh
+  python3 tests/schema_test.py
   ```
 
 ## P2 - Medium Priority Issues
@@ -100,54 +55,47 @@
 ### GAP-006: Information Disclosure in Logs
 - **Type**: Security footgun
 - **Severity**: P2
-- **Evidence**: hooks/workflows/require-green-tests.sh line 65
-  ```bash
-  echo "$OUTPUT"  # Full test output to console
-  ```
+- **Evidence**: hooks/workflows/require-green-tests.sh prints test output to console (now truncated by default via `WORKFLOWS_TEST_MAX_OUTPUT_LINES`, default 200)
 - **Impact**: Test output may contain secrets, API keys, or sensitive data
-- **Minimal Fix**: Truncate output or filter sensitive patterns
+- **Minimal Fix**: Filter sensitive patterns and/or default to less verbose output (opt-in to full output)
 - **Verification**: Review logged output for sensitive data patterns
 
 ### GAP-007: Temp File Permissions
 - **Type**: Security footgun
 - **Severity**: P2
-- **Evidence**: State file created without explicit permissions
-- **Impact**: Other users on shared system may read/write state
-- **Minimal Fix**: `umask 077` before creating state files
-- **Verification**: `ls -la .claude/.state/` should show 600 permissions
+- **Status**: RESOLVED
+- **Evidence**: hooks/workflows/require-green-tests.sh sets `umask 077` before creating state/output files
 
 ### GAP-008: API Key Examples in Docs
 - **Type**: Security footgun
 - **Severity**: P2
-- **Evidence**: config/delegator/mcp-servers.example.json may show API key format
-- **Impact**: Users might commit real keys if they modify example
-- **Minimal Fix**: Use obviously fake keys like `sk-REPLACE_ME_NEVER_COMMIT`
-- **Verification**: Grep for API key patterns
+- **Status**: RESOLVED / NOT APPLICABLE
+- **Evidence**: config/delegator/mcp-servers.example.json does not include API keys (Codex CLI auth uses `codex login`)
 
 ### GAP-009: Missing Dependency Checks
 - **Type**: Reliability gap
 - **Severity**: P2
 - **Evidence**:
-  - todo-enforcer.sh requires `jq` but doesn't check
-  - Python hooks require `python3` but don't check
+  - todo-enforcer.sh checks for `jq` but only logs to `~/.claude/hooks/todo-enforcer.log` and exits 0 (no user-facing warning)
+  - Python hooks rely on `python3` at runtime; manual install path does not include a preflight check
 - **Impact**: Silent failures if dependencies missing
 - **Minimal Fix**: Add dependency checks at script start
 - **Verification**:
   ```bash
-  # Remove jq temporarily
-  PATH=/usr/bin ./hooks/todo-enforcer.sh
-  # Should show clear error about missing jq
+  # Hide jq temporarily and confirm the missing-dependency path is surfaced (or at least logged)
+  PATH="/usr/bin:/bin" ./hooks/todo-enforcer.sh || true
+  tail -n 20 ~/.claude/hooks/todo-enforcer.log || true
   ```
 
 ### GAP-010: No Schema Validation for Config
 - **Type**: Maintenance gap
 - **Severity**: P2
-- **Evidence**: No JSON schema for config/delegator/*.json files
+- **Evidence**: No formal JSON schema for config/delegator/*.json files (basic validation exists in tests/schema_test.py)
 - **Impact**: Invalid config not caught until runtime
 - **Minimal Fix**: Add JSON schemas and validation script
 - **Verification**:
   ```bash
-  ./scripts/validate-config.sh
+  python3 tests/schema_test.py
   ```
 
 ## Routing/Hook Gaps
@@ -189,14 +137,14 @@
 
 | Gap ID | Type | Severity | Fix Complexity | Automated Verification |
 |--------|------|----------|----------------|------------------------|
-| GAP-001 | Broken wiring | P0 | Medium | Yes |
-| GAP-002 | Security | P0 | Low | Yes |
-| GAP-003 | Security | P1 | Low | Yes |
+| GAP-001 | Broken wiring | RESOLVED | Medium | Yes |
+| GAP-002 | Security | RESOLVED | Low | Yes |
+| GAP-003 | Security | RESOLVED | Low | Yes |
 | GAP-004 | Security | P1 | Medium | Manual |
 | GAP-005 | Verification | P1 | Medium | Yes |
 | GAP-006 | Security | P2 | Low | Manual |
-| GAP-007 | Security | P2 | Low | Yes |
-| GAP-008 | Security | P2 | Low | Yes |
+| GAP-007 | Security | RESOLVED | Low | Yes |
+| GAP-008 | Security | RESOLVED | Low | Yes |
 | GAP-009 | Reliability | P2 | Low | Yes |
 | GAP-010 | Maintenance | P2 | Medium | Yes |
 | GAP-013 | UX | P2 | Low | Manual |

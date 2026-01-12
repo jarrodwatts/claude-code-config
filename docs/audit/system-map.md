@@ -1,6 +1,6 @@
 # System Map
 
-**Generated**: 2026-01-11
+**Generated**: 2026-01-12
 
 ## Overview
 
@@ -53,11 +53,11 @@ Commands are discovered by Claude Code scanning `~/.claude/commands/**/*.md`. Tr
 | Command | Path | Purpose |
 |---------|------|---------|
 | `/interview` | commands/interview.md | Requirements gathering |
-| `/brainstorm` | commands/workflows/brainstorm.md | Ideation workflow |
-| `/plan` | commands/workflows/plan.md | Planning workflow |
-| `/work` | commands/workflows/work.md | Implementation workflow |
-| `/review` | commands/workflows/review.md | Code review workflow |
-| `/compound` | commands/workflows/compound.md | Multi-phase workflow |
+| `/workflows/brainstorm` | commands/workflows/brainstorm.md | Ideation workflow |
+| `/workflows/plan` | commands/workflows/plan.md | Planning workflow |
+| `/workflows/work` | commands/workflows/work.md | Implementation workflow |
+| `/workflows/review` | commands/workflows/review.md | Code review workflow |
+| `/workflows/compound` | commands/workflows/compound.md | Multi-phase workflow |
 | `/claude-delegator/setup` | commands/claude-delegator/setup.md | Delegator installation |
 | `/claude-delegator/task` | commands/claude-delegator/task.md | Codex delegation |
 | `/claude-delegator/uninstall` | commands/claude-delegator/uninstall.md | Delegator removal |
@@ -82,8 +82,9 @@ Agents are custom subagent configurations discovered from `~/.claude/agents/**/*
 | codebase-search | Internal codebase exploration |
 | media-interpreter | Image/media analysis |
 | open-source-librarian | External library research |
+| oracle | High-stakes architecture and debugging |
 | tech-docs-writer | Documentation generation |
-| review/* (15 specialists) | Domain-specific code review |
+| review/* (14 specialists) | Domain-specific code review |
 
 ### 5. Rules (Path-Scoped Instructions)
 
@@ -136,6 +137,7 @@ Required `~/.claude/settings.json` snippet:
 |----------|---------|---------|---------|
 | WORKFLOWS_TEST_CMD | require-green-tests.sh | Override test command | Auto-detected |
 | SUPERPOWERS_TEST_CMD | require-green-tests.sh | Legacy alias | - |
+| WORKFLOWS_TEST_MAX_OUTPUT_LINES | require-green-tests.sh | Truncate printed test output | 200 |
 | REPO_ROOT | All hooks | Repository root path | `git rev-parse --show-toplevel` |
 
 ## State Files
@@ -166,6 +168,6 @@ Required `~/.claude/settings.json` snippet:
 |---------|------|-----------------|
 | Tests fail | require-green-tests.sh | Exit blocked, message shown |
 | Todos incomplete | todo-enforcer.sh | Exit blocked, message shown |
-| jq missing | todo-enforcer.sh | Hook fails silently |
+| jq missing | todo-enforcer.sh | Logs error and allows exit (no user-facing warning) |
 | Python missing | keyword-detector.py | Hook fails silently |
 | Invalid JSON in tool output | check-comments.py | Attempts repair, may fail |

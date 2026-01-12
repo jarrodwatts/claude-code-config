@@ -47,10 +47,10 @@ sequenceDiagram
     PTU->>CHK: Execute (matcher: Write|Edit)
     CHK->>CHK: Analyze comment ratio
     alt Ratio > 25%
-        CHK-->>CC: Block with message
-        CC-->>U: Show warning
+        CHK-->>CC: Append warning context
+        CC-->>U: Show warning (non-blocking)
     else Ratio OK
-        CHK-->>CC: Allow
+        CHK-->>CC: No output
     end
 
     Note over U,TE: === Stop Flow (Success) ===

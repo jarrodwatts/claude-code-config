@@ -4,7 +4,7 @@ A curated collection of skills, agents, rules, hooks, and workflows for Claude C
 
 ![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)
 ![Skills](https://img.shields.io/badge/Skills-16-green)
-![Agents](https://img.shields.io/badge/Agents-20-orange)
+![Agents](https://img.shields.io/badge/Agents-19-orange)
 ![Hooks](https://img.shields.io/badge/Hooks-4-purple)
 ![Rules](https://img.shields.io/badge/Rules-8-yellow)
 

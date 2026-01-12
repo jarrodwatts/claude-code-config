@@ -1,6 +1,6 @@
 # Dead/Unreachable Ledger
 
-**Generated**: 2026-01-11
+**Generated**: 2026-01-12
 
 ## Summary
 
@@ -9,7 +9,7 @@
 | Dead Code | 0 |
 | Unreachable Components | 0 |
 | Orphan Files | 0 |
-| Broken References | 1 (minor) |
+| Broken References | 0 |
 
 ## Analysis Methodology
 
@@ -62,8 +62,8 @@ All agents are discovered by Claude Code via `~/.claude/agents/**/*.md` pattern.
 | codebase-search.md | ✓ |
 | media-interpreter.md | ✓ |
 | open-source-librarian.md | ✓ |
+| oracle.md | ✓ |
 | tech-docs-writer.md | ✓ |
-| review/index.md | ✓ |
 | review/security-sentinel.md | ✓ |
 | review/performance-oracle.md | ✓ |
 | review/architecture-strategist.md | ✓ |
@@ -101,8 +101,8 @@ All hooks are referenced in INSTALL.md hook wiring section.
 |------|-------------------------|---------|------------------|
 | keyword-detector.py | ✓ | `#!/usr/bin/env python3` | Needs chmod +x |
 | check-comments.py | ✓ | `#!/usr/bin/env python3` | Needs chmod +x |
-| todo-enforcer.sh | ✓ | `#!/bin/bash` | Needs chmod +x |
-| workflows/require-green-tests.sh | ✓ | `#!/bin/bash` | Needs chmod +x |
+| todo-enforcer.sh | ✓ | `#!/usr/bin/env bash` | Needs chmod +x |
+| workflows/require-green-tests.sh | ✓ | `#!/usr/bin/env bash` | Needs chmod +x |
 
 ### Rules (8/8 reachable)
 All rules are discovered by Claude Code via `~/.claude/rules/**/*.md` pattern.
@@ -140,11 +140,7 @@ All config files are referenced in INSTALL.md.
 
 ## Minor Issues Found
 
-### Issue 1: Documentation Syntax Inconsistency
-- **File**: README.md
-- **Issue**: Command syntax shown as `:workflows/brainstorm` but actual trigger is `/workflows/brainstorm`
-- **Impact**: P2 (cosmetic, no functional impact)
-- **Fix**: Update README to use `/` prefix consistently
+None.
 
 ## Unused But Intentional
 
@@ -165,4 +161,4 @@ The following are not "dead code" but rather support files:
 2. Discoverable by Claude Code runtime patterns
 3. Have valid internal references
 
-The repository is well-organized with complete wiring coverage. The only false claim (missing install.sh) is documented in the Claims Ledger.
+The repository is well-organized with complete wiring coverage, and core install wiring is present (`install.sh` + `settings.json.example`).
