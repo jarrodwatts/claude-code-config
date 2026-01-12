@@ -1,14 +1,16 @@
 {
   "meta": {
-    "version": "1.1",
+    "version": "1.2",
     "generated": "2026-01-12",
-    "pass": 2,
+    "pass": 3,
     "repo": "claude-code-config/san-juan",
-    "corrections": [
-      "Fixed keyword-detector edges: now type=context-injection (suggestions, not dispatches)",
-      "Fixed review agent edges: now conditional based on file types per routing table",
-      "Added all 14 review agent conditional edges",
-      "Added 5 context mode nodes for keyword-detector targets"
+    "changes": [
+      "Pass 3: Added PreToolUse hook (parallel-dispatch-guide.py)",
+      "Pass 3: Expanded keyword-detector from 5 to 13+ context modes",
+      "Pass 3: Added context flag sharing between UserPromptSubmit and PreToolUse hooks",
+      "Pass 3: GAP-012 RESOLVED - PreToolUse now auto-dispatches agents",
+      "Pass 2: Fixed keyword-detector edges to context-injection type",
+      "Pass 2: Fixed review agent edges to conditional routing"
     ]
   },
   "nodes": [
@@ -103,6 +105,72 @@
       "event": "Stop",
       "blocking": true,
       "evidence": "hooks/todo-enforcer.sh"
+    },
+    {
+      "id": "hook:parallel-dispatch-guide",
+      "type": "hook",
+      "label": "parallel-dispatch-guide.py",
+      "event": "PreToolUse",
+      "matcher": "Read|Grep|Glob|Bash",
+      "blocking": false,
+      "note": "Auto-dispatches parallel agents when review/exploration context detected",
+      "evidence": "hooks/parallel-dispatch-guide.py"
+    },
+    {
+      "id": "context:review-mode",
+      "type": "context",
+      "label": "Review Mode",
+      "note": "Triggers parallel dispatch of security/architecture/code-simplicity agents",
+      "evidence": "hooks/keyword-detector.py:272-293"
+    },
+    {
+      "id": "context:exploration-mode",
+      "type": "context",
+      "label": "Exploration Mode",
+      "note": "Triggers codebase-search agents in parallel",
+      "evidence": "hooks/keyword-detector.py:295-308"
+    },
+    {
+      "id": "context:library-mode",
+      "type": "context",
+      "label": "Library Mode",
+      "note": "Triggers open-source-librarian for external docs",
+      "evidence": "hooks/keyword-detector.py:310-322"
+    },
+    {
+      "id": "context:github-work-mode",
+      "type": "context",
+      "label": "GitHub Work Mode",
+      "note": "Full implementation cycle: investigate → implement → PR",
+      "evidence": "hooks/keyword-detector.py:324-340"
+    },
+    {
+      "id": "context:multi-module-mode",
+      "type": "context",
+      "label": "Multi-Module Mode",
+      "note": "Parallel codebase-search for multiple modules",
+      "evidence": "hooks/keyword-detector.py:342-357"
+    },
+    {
+      "id": "context:debugging-mode",
+      "type": "context",
+      "label": "Debugging Mode",
+      "note": "Activates systematic-debugging skill",
+      "evidence": "hooks/keyword-detector.py:359-376"
+    },
+    {
+      "id": "context:compound-mode",
+      "type": "context",
+      "label": "Compound Mode",
+      "note": "Suggests documenting solution in docs/solutions/",
+      "evidence": "hooks/keyword-detector.py:378-389"
+    },
+    {
+      "id": "context:brainstorm-mode",
+      "type": "context",
+      "label": "Brainstorm Mode",
+      "note": "Activates brainstorming skill for design decisions",
+      "evidence": "hooks/keyword-detector.py:391-403"
     },
     {
       "id": "cmd:interview",
@@ -557,6 +625,14 @@
     },
     {
       "from": "entry:tool-use",
+      "to": "hook:parallel-dispatch-guide",
+      "condition": "Read|Grep|Glob|Bash",
+      "type": "pre-tool-intercept",
+      "note": "PreToolUse hook intercepts exploration tools to auto-dispatch agents",
+      "evidence": "settings.json.example:PreToolUse"
+    },
+    {
+      "from": "entry:tool-use",
       "to": "hook:check-comments",
       "condition": "Write|Edit",
       "evidence": "settings.json.example:PostToolUse"
@@ -611,7 +687,129 @@
       "type": "context-injection",
       "condition": "think\\s*(deeply|hard|carefully)",
       "note": "Injects additionalContext for extended reasoning - does NOT dispatch",
-      "evidence": "hooks/keyword-detector.py:111-127"
+      "evidence": "hooks/keyword-detector.py:486-487"
+    },
+    {
+      "from": "hook:keyword-detector",
+      "to": "context:review-mode",
+      "type": "context-injection",
+      "condition": "review (code|pr|security|performance|architecture)",
+      "note": "Injects CONTEXT_REVIEW - suggests parallel dispatch",
+      "evidence": "hooks/keyword-detector.py:433-440"
+    },
+    {
+      "from": "hook:keyword-detector",
+      "to": "context:exploration-mode",
+      "type": "context-injection",
+      "condition": "how does|where is|trace flow",
+      "note": "Injects CONTEXT_EXPLORATION - suggests codebase-search agents",
+      "evidence": "hooks/keyword-detector.py:460-461"
+    },
+    {
+      "from": "hook:keyword-detector",
+      "to": "context:library-mode",
+      "type": "context-injection",
+      "condition": "library name|how to use|best practice",
+      "note": "Injects CONTEXT_LIBRARY - suggests open-source-librarian",
+      "evidence": "hooks/keyword-detector.py:450-457"
+    },
+    {
+      "from": "hook:keyword-detector",
+      "to": "context:github-work-mode",
+      "type": "context-injection",
+      "condition": "@mention|look into.*create PR",
+      "note": "Injects CONTEXT_GITHUB_WORK - full implementation cycle",
+      "evidence": "hooks/keyword-detector.py:443-447"
+    },
+    {
+      "from": "hook:keyword-detector",
+      "to": "context:multi-module-mode",
+      "type": "context-injection",
+      "condition": "module|component|service + multiple ands/commas",
+      "note": "Injects CONTEXT_MULTI_MODULE - parallel module exploration",
+      "evidence": "hooks/keyword-detector.py:464-467"
+    },
+    {
+      "from": "hook:keyword-detector",
+      "to": "context:debugging-mode",
+      "type": "context-injection",
+      "condition": "error|exception|failed|broken|bug",
+      "note": "Injects CONTEXT_DEBUGGING - systematic-debugging skill",
+      "evidence": "hooks/keyword-detector.py:470-471"
+    },
+    {
+      "from": "hook:keyword-detector",
+      "to": "context:compound-mode",
+      "type": "context-injection",
+      "condition": "that worked|it's fixed|problem solved",
+      "note": "Injects CONTEXT_COMPOUND - document solution",
+      "evidence": "hooks/keyword-detector.py:473-474"
+    },
+    {
+      "from": "hook:keyword-detector",
+      "to": "context:brainstorm-mode",
+      "type": "context-injection",
+      "condition": "brainstorm|options|trade-offs",
+      "note": "Injects CONTEXT_BRAINSTORM - design decision mode",
+      "evidence": "hooks/keyword-detector.py:476-477"
+    },
+    {
+      "from": "hook:keyword-detector",
+      "to": "hook:parallel-dispatch-guide",
+      "type": "context-flag-sharing",
+      "condition": "always",
+      "note": "Writes context flags to ~/.claude/hooks/state/session-context.json",
+      "evidence": "hooks/keyword-detector.py:100-168"
+    },
+    {
+      "from": "hook:parallel-dispatch-guide",
+      "to": "agent:review-security-sentinel",
+      "type": "auto-dispatch",
+      "condition": "review_security flag + score >= 3",
+      "note": "Auto-dispatches agent in background when context detected",
+      "evidence": "hooks/parallel-dispatch-guide.py:146-147"
+    },
+    {
+      "from": "hook:parallel-dispatch-guide",
+      "to": "agent:review-performance-oracle",
+      "type": "auto-dispatch",
+      "condition": "review_performance flag + score >= 3",
+      "evidence": "hooks/parallel-dispatch-guide.py:148-149"
+    },
+    {
+      "from": "hook:parallel-dispatch-guide",
+      "to": "agent:review-architecture-strategist",
+      "type": "auto-dispatch",
+      "condition": "review_architecture flag + score >= 3",
+      "evidence": "hooks/parallel-dispatch-guide.py:150-151"
+    },
+    {
+      "from": "hook:parallel-dispatch-guide",
+      "to": "agent:review-code-simplicity",
+      "type": "auto-dispatch",
+      "condition": "review_mode flag (fallback)",
+      "evidence": "hooks/parallel-dispatch-guide.py:154-155"
+    },
+    {
+      "from": "hook:parallel-dispatch-guide",
+      "to": "agent:review-pattern-recognition",
+      "type": "auto-dispatch",
+      "condition": "review_mode flag (fallback)",
+      "evidence": "hooks/parallel-dispatch-guide.py:154-155"
+    },
+    {
+      "from": "hook:parallel-dispatch-guide",
+      "to": "agent:codebase-search",
+      "type": "auto-dispatch",
+      "condition": "exploration_mode flag + score >= 3",
+      "evidence": "hooks/parallel-dispatch-guide.py:158-159"
+    },
+    {
+      "from": "hook:parallel-dispatch-guide",
+      "to": "agent:open-source-librarian",
+      "type": "auto-dispatch",
+      "condition": "library_context flag + score >= 3",
+      "evidence": "hooks/parallel-dispatch-guide.py:162-163"
     },
     {
       "from": "cmd:workflows-review",

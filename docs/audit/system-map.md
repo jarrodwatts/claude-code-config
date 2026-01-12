@@ -1,6 +1,6 @@
 # System Map
 
-**Last Updated:** 2026-01-12 (Pass 2)
+**Last Updated:** 2026-01-12 (Pass 3)
 
 ## Overview
 
@@ -24,16 +24,39 @@ This document provides a comprehensive inventory of the Claude Code configuratio
 | ID | File | Event | Blocking | Trigger |
 |----|------|-------|----------|---------|
 | hook:keyword-detector | `hooks/keyword-detector.py` | UserPromptSubmit | No | Always |
+| hook:parallel-dispatch-guide | `hooks/parallel-dispatch-guide.py` | PreToolUse | No | Read\|Grep\|Glob\|Bash |
 | hook:check-comments | `hooks/check-comments.py` | PostToolUse | No | Write\|Edit |
 | hook:require-green-tests | `hooks/workflows/require-green-tests.sh` | Stop | Yes | Always |
 | hook:todo-enforcer | `hooks/todo-enforcer.sh` | Stop | Yes | Always |
 
 ### Hook Behavior Details
 
-**keyword-detector.py** (140 lines)
-- Detects 5 keyword patterns: ultrawork, delegation, search, analysis, think
-- Outputs: `hookSpecificOutput.additionalContext` (context injection, not dispatch)
-- Does NOT dispatch agents/skills directly
+**keyword-detector.py** (502 lines) - EXPANDED in Pass 3
+- Detects 28+ keyword patterns across 7 tiers:
+  - Tier 1: Mode activation (ultrawork, delegation, search, analysis, think)
+  - Tier 2: Review triggers (security, performance, architecture)
+  - Tier 3: Exploration (how does, where is, trace)
+  - Tier 4: Library/external (npm, pip, library names)
+  - Tier 5: GitHub/workflow (@mention, create PR)
+  - Tier 6: Domain-specific (auth, performance, migration, deploy)
+  - Tier 7: Skill activation (debugging, tdd, planning, compound, brainstorm)
+- Outputs: `hookSpecificOutput.additionalContext` (context injection)
+- **NEW**: Writes context flags to `~/.claude/hooks/state/session-context.json` for PreToolUse hook
+- Does NOT dispatch agents directly - shares context with parallel-dispatch-guide
+
+**parallel-dispatch-guide.py** (251 lines) - NEW in Pass 3
+- Event: PreToolUse (intercepts exploration tools before execution)
+- Reads context flags from keyword-detector via shared state file
+- Score-based dispatch (MIN_SCORE_TO_DISPATCH = 3)
+- Tracks exploration count in 60-second window
+- Auto-dispatches up to 5 agents in background:
+  - review_security → security-sentinel
+  - review_performance → performance-oracle
+  - review_architecture → architecture-strategist
+  - review_mode → code-simplicity, pattern-recognition
+  - exploration_mode → codebase-search
+  - library_context → open-source-librarian
+- **RESOLVES GAP-012**: Now provides actual enforcement, not just suggestions
 
 **check-comments.py** (233 lines)
 - Analyzes code for comment ratio (threshold: 25%)

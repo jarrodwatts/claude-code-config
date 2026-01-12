@@ -1,37 +1,36 @@
 # Gap Ledger
 
-**Last Updated:** 2026-01-12 (Pass 2)
+**Last Updated:** 2026-01-12 (Pass 3)
 
 ## Summary
 
 | Severity | Open | Resolved | Total |
 |----------|------|----------|-------|
 | P0 (Critical) | 0 | 0 | 0 |
-| P1 (High) | 3 | 0 | 3 |
+| P1 (High) | 2 | 1 | 3 |
 | P2 (Medium) | 6 | 1 | 7 |
-| P3 (Low) | 1 | 0 | 1 |
+| P3 (Low) | 0 | 1 | 1 |
 
 ---
 
 ## P1 - High Priority
 
 ### GAP-001: keyword-detector only suggests, does not enforce
-**Status:** OPEN
-**Risk:** Model may ignore context suggestions; no deterministic routing guarantee
-**Evidence:** `hooks/keyword-detector.py:main()` - outputs `hookSpecificOutput.additionalContext` only
-**Failing Test Idea:**
-```python
-def test_keyword_detector_does_not_dispatch():
-    """Verify keyword-detector returns context, not agent dispatch."""
-    # Input with "search" keyword
-    result = run_hook("keyword-detector.py", {"prompt": "search for files"})
-    assert "hookSpecificOutput" in result
-    assert "additionalContext" in result["hookSpecificOutput"]
-    # No agent was actually dispatched - only context was injected
-```
-**Fix:** Either:
-1. Accept this as design (soft suggestions) and document
-2. Add actual dispatch logic via PreToolUse hook to enforce routing
+**Status:** RESOLVED (Pass 3)
+**Resolution:** PreToolUse hook (`parallel-dispatch-guide.py`) now reads context flags set by keyword-detector and auto-dispatches agents when score >= 3.
+
+**How it works:**
+1. UserPromptSubmit: keyword-detector writes flags to `~/.claude/hooks/state/session-context.json`
+2. PreToolUse: parallel-dispatch-guide reads flags, calculates score, dispatches agents
+3. Score thresholds: review_security=3, review_performance=3, exploration_mode=2, etc.
+4. Agents dispatched in background mode automatically
+
+**Evidence:**
+- `hooks/keyword-detector.py:100-168` - writes context flags
+- `hooks/parallel-dispatch-guide.py:82-93` - reads context flags
+- `hooks/parallel-dispatch-guide.py:237-245` - auto-dispatch logic
+
+**Remaining concern:** Model can still ignore suggestions, but enforcement is now partial via PreToolUse
 
 ---
 
@@ -182,11 +181,20 @@ result = mcp__codex__codex(prompt="just do something")
 ## P3 - Low Priority
 
 ### GAP-012: No PreToolUse hook for parallel agent auto-dispatch
-**Status:** OPEN
-**Risk:** User must manually invoke parallel agents even when context suggests them
-**Evidence:** keyword-detector only injects context, doesn't trigger actual dispatch
-**Failing Test Idea:** N/A (enhancement request)
-**Fix:** Consider adding PreToolUse hook to auto-dispatch when context detected
+**Status:** RESOLVED (Pass 3)
+**Resolution:** `hooks/parallel-dispatch-guide.py` implemented as PreToolUse hook.
+
+**Implementation details:**
+- Matcher: `Read|Grep|Glob|Bash`
+- Reads context flags from keyword-detector
+- Score-based dispatch (MIN_SCORE_TO_DISPATCH = 3)
+- Tracks exploration count in session window (60 seconds)
+- Dispatches max 5 agents per session
+- Agents: security-sentinel, performance-oracle, architecture-strategist, code-simplicity, pattern-recognition, codebase-search, open-source-librarian
+
+**Evidence:**
+- `hooks/parallel-dispatch-guide.py` (251 lines)
+- `settings.json.example:13-22` - PreToolUse configuration
 
 ---
 
@@ -196,3 +204,4 @@ result = mcp__codex__codex(prompt="just do something")
 |------|------|------------|---------------|
 | 1 | 2026-01-11 | GAP-004, 006, 009, 013, 015-020 | - |
 | 2 | 2026-01-12 | GAP-001, 012 | GAP-015 |
+| 3 | 2026-01-12 | - | GAP-001, GAP-012 |
