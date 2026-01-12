@@ -42,8 +42,11 @@ PATTERNS_REVIEW = {
     "review_code": r"\breview\s+(\w+\s+)?(code|pr|pull\s*request|diff|changes?)\b",
     "review_plan": r"\breview\s+(this\s+)?(plan|proposal|design)\b",
     "review_security": r"\b(security\s+review|is\s+this\s+secure|threat\s+model|pentest|vulnerabilit(y|ies)?)\b",
+    "review_security_alt": r"\breview\b.*\bsecurity\b",
     "review_performance": r"\b(performance|perf)\s+(review|check|audit)\b",
+    "review_performance_alt": r"\breview\b.*\b(performance|perf)\b",
     "review_architecture": r"\b(architecture|arch)\s+(review|check|audit)\b",
+    "review_architecture_alt": r"\breview\b.*\b(architecture|arch)\b",
     "review_general": r"\breview\b.*\b(codebase|project|repo)\b",
 }
 
@@ -160,16 +163,31 @@ def test_review_patterns():
         "check for vulnerabilities",
     ])
 
+    test_pattern("review_security_alt", PATTERNS_REVIEW["review_security_alt"], [
+        "review this codebase for security issues",
+        "review for security, performance, and architecture",
+    ])
+
     test_pattern("review_performance", PATTERNS_REVIEW["review_performance"], [
         "performance review please",
         "perf check this",
         "do a perf audit",
     ])
 
+    test_pattern("review_performance_alt", PATTERNS_REVIEW["review_performance_alt"], [
+        "review this for performance issues",
+        "review for security, performance, and architecture",
+    ])
+
     test_pattern("review_architecture", PATTERNS_REVIEW["review_architecture"], [
         "architecture review needed",
         "arch check this design",
         "do an arch audit",
+    ])
+
+    test_pattern("review_architecture_alt", PATTERNS_REVIEW["review_architecture_alt"], [
+        "review this for architecture issues",
+        "review for security, performance, and architecture",
     ])
 
     test_pattern("review_general", PATTERNS_REVIEW["review_general"], [

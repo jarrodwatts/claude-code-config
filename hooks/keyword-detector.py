@@ -35,8 +35,11 @@ PATTERNS_REVIEW = {
     "review_code": r"\breview\s+(\w+\s+)?(code|pr|pull\s*request|diff|changes?)\b",
     "review_plan": r"\breview\s+(this\s+)?(plan|proposal|design)\b",
     "review_security": r"\b(security\s+review|is\s+this\s+secure|threat\s+model|pentest|vulnerabilit(y|ies)?)\b",
+    "review_security_alt": r"\breview\b.*\bsecurity\b",
     "review_performance": r"\b(performance|perf)\s+(review|check|audit)\b",
+    "review_performance_alt": r"\breview\b.*\b(performance|perf)\b",
     "review_architecture": r"\b(architecture|arch)\s+(review|check|audit)\b",
+    "review_architecture_alt": r"\breview\b.*\b(architecture|arch)\b",
     "review_general": r"\breview\b.*\b(codebase|project|repo)\b",
 }
 
@@ -106,12 +109,15 @@ def write_context_flags(prompt: str) -> None:
         "review_mode": bool(re.search(r"\breview\b", prompt_lower)),
         "review_security": bool(
             re.search(PATTERNS_REVIEW["review_security"], prompt_lower, re.I)
+            or re.search(PATTERNS_REVIEW["review_security_alt"], prompt_lower, re.I)
         ),
         "review_performance": bool(
             re.search(PATTERNS_REVIEW["review_performance"], prompt_lower, re.I)
+            or re.search(PATTERNS_REVIEW["review_performance_alt"], prompt_lower, re.I)
         ),
         "review_architecture": bool(
             re.search(PATTERNS_REVIEW["review_architecture"], prompt_lower, re.I)
+            or re.search(PATTERNS_REVIEW["review_architecture_alt"], prompt_lower, re.I)
             or re.search(r"\b(architecture|tradeoffs?|design)\b", prompt_lower)
         ),
         # Exploration context
