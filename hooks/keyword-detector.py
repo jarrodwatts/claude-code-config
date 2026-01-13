@@ -92,6 +92,10 @@ PATTERNS_SKILLS = {
     "brainstorm": r"\b(brainstorm|options|approaches|alternatives|design\s+decision|trade.?offs?|pros\s+and\s+cons)\b",
     # verification-before-completion: completion signals
     "verification": r"\b(done|finished|completed|ready\s+to\s+(ship|merge|deploy))\b",
+    # Non-trivial task patterns (auto-planning)
+    "non_trivial_feature": r"\b(add|implement|create|build)\s+(a\s+)?(\w+\s+)*(feature|system|module|service|component)\b",
+    "non_trivial_refactor": r"\b(refactor|restructure|reorganize|migrate)\b",
+    "non_trivial_multi": r"\b(across|multiple|several)\s+(files?|modules?|components?)\b",
     # executing-plans: resume/continue patterns
     "resume": r"\b(continue|resume|pick\s+up|where\s+we\s+left|carry\s+on|proceed)\b",
 }
@@ -173,6 +177,13 @@ def write_context_flags(prompt: str) -> None:
         ),
         "brainstorm_context": bool(
             re.search(PATTERNS_SKILLS["brainstorm"], prompt_lower, re.I)
+        ),
+        # Planning context (non-trivial work detection)
+        "planning_context": bool(
+            re.search(PATTERNS_SKILLS["planning"], prompt_lower, re.I)
+            or re.search(PATTERNS_SKILLS["non_trivial_feature"], prompt_lower, re.I)
+            or re.search(PATTERNS_SKILLS["non_trivial_refactor"], prompt_lower, re.I)
+            or re.search(PATTERNS_SKILLS["non_trivial_multi"], prompt_lower, re.I)
         ),
         "verification_context": bool(
             re.search(PATTERNS_SKILLS["verification"], prompt_lower, re.I)
@@ -551,6 +562,19 @@ def main():
         re.findall(r"\b(and|,)\b", prompt_lower)
     ) >= 2:
         additional_context = CONTEXT_MULTI_MODULE
+
+    # Priority 6.5: Planning patterns (non-trivial work)
+    elif re.search(PATTERNS_SKILLS["planning"], prompt_lower, re.I):
+        additional_context = CONTEXT_PLANNING
+
+    elif re.search(PATTERNS_SKILLS["non_trivial_feature"], prompt_lower, re.I):
+        additional_context = CONTEXT_PLANNING
+
+    elif re.search(PATTERNS_SKILLS["non_trivial_refactor"], prompt_lower, re.I):
+        additional_context = CONTEXT_PLANNING
+
+    elif re.search(PATTERNS_SKILLS["non_trivial_multi"], prompt_lower, re.I):
+        additional_context = CONTEXT_PLANNING
 
     # Priority 7: Skill activation patterns
     elif re.search(PATTERNS_SKILLS["debugging"], prompt_lower, re.I):
