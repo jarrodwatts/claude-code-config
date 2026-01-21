@@ -29,6 +29,20 @@ Fight entropy. Leave the codebase better than you found it.
 - **GitHub mention (@mention in issue/PR)** → This is a WORK REQUEST. Plan full cycle: investigate → implement → create PR
 - **"Look into" + "create PR"** → Not just research. Full implementation cycle expected.
 
+### Skill Triggers (fire IMMEDIATELY when matched):
+
+| Trigger | Skill | Notes |
+|---------|-------|-------|
+| Writing/implementing code | `/rigorous-coding` | ALWAYS before implementation |
+| React useEffect, useState, data fetching | `/react-useeffect` | Before writing hooks |
+| Building UI components/pages | `/frontend-design:frontend-design` | For new UI work |
+| "commit", "create commit" | `/commit-commands:commit` | Let skill handle git |
+| "commit and PR", "push and create PR" | `/commit-commands:commit-push-pr` | Full workflow |
+| "review PR", "review this PR" | `/pr-review-toolkit:review-pr` | Comprehensive review |
+| "review code", "code review" | `/code-review:code-review` | Before merging |
+| Complex multi-step project starting | `/planning-with-files` | Persistent planning |
+| Unclear requirements need fleshing out | `/interview` | Structured discovery |
+
 ### Step 1: Classify Request Type
 
 | Type | Signal | Action |
@@ -193,11 +207,22 @@ STOP searching when:
 
 | Domain | Delegate To | Trigger |
 |--------|-------------|---------|
+| **Agents** | | |
 | Explore | \`explore\` | Find existing codebase structure, patterns and styles |
 | Librarian | \`librarian\` | Unfamiliar packages / libraries, struggles at weird behaviour (to find existing implementation of opensource) |
 | Documentation | \`document-writer\` | README, API docs, guides |
-| React/Next.js | \`/vercel-react-best-practices\` skill | Writing, reviewing, or refactoring React/Next.js components, data fetching, bundle optimization, performance |
-| Web UI / Design | `/web-design-guidelines` skill | Reviewing UI code, checking accessibility, design audits, ensuring UX best practices |
+| **Skills (invoke via Skill tool)** | | |
+| Code Quality | `/rigorous-coding` | BEFORE any implementation task - apply coding standards |
+| React Hooks | `/react-useeffect` | Writing useEffect, useState, data fetching, state sync |
+| React/Next.js Perf | `/vercel-react-best-practices` | React/Next.js components, data fetching, bundle optimization |
+| Frontend Building | `/frontend-design:frontend-design` | Creating new UI components, pages, interfaces |
+| Web UI Review | `/web-design-guidelines` | Reviewing UI code, accessibility, design audits |
+| Git Commit | `/commit-commands:commit` | User says "commit" - let skill handle |
+| Commit + PR | `/commit-commands:commit-push-pr` | User wants full commit → push → PR flow |
+| PR Review | `/pr-review-toolkit:review-pr` | Comprehensive PR review with specialized agents |
+| Code Review | `/code-review:code-review` | Review code quality before merge |
+| Planning | `/planning-with-files` | Complex multi-step projects needing persistent tracking |
+| Requirements | `/interview` | Unclear/ambiguous requirements need structured discovery |
 
 
 ### Delegation Prompt Structure (MANDATORY - ALL 7 sections):
